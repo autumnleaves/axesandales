@@ -45,22 +45,28 @@ export const INITIAL_TERRAIN_BOXES: TerrainBox[] = [
   { id: 'POSTAPOC-1', category: TerrainCategory.SCIFI, name: 'Post-Apoc Box 1', imageUrl: `${BASE_IMG}/PostApoc1.jpg` },
 ];
 
+const getLocalIsoDateString = (date = new Date()): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const getUpcomingTuesdays = (): string[] => {
   const dates: string[] = [];
-  // Gross but ensures we get the correct local date regardless of timezone. Always use UTC+
   const local = new Date();
-  let d = new Date(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate()));
+  let d = new Date(local.getFullYear(), local.getMonth(), local.getDate());
 
   // hacky workaround - we want to open up the new website from march 2026
   if (d < new Date('2026-03-01')) {
-    d = new Date(Date.UTC(2026, 2, 3)); // March 3, 2026 is the first Tuesday after March 1. Month is 0-indexed
+    d = new Date(2026, 2, 3); // March 3, 2026 is the first Tuesday after March 1. Month is 0-indexed
   }
 
   while (d.getDay() !== 2) {
     d.setDate(d.getDate() + 1);
-  }  
+  }
   for (let i = 0; i < 8; i++) {
-    dates.push(d.toISOString().split('T')[0]);
+    dates.push(getLocalIsoDateString(d));
     d.setDate(d.getDate() + 7);
   }
   return dates;
@@ -71,8 +77,10 @@ export const getUpcomingTuesdays = (): string[] => {
  * excluding cancelled dates and past dates.
  */
 export const getBookableDates = (specialEventDates: string[], cancelledDates: string[]): string[] => {
+    const today = getLocalIsoDateString();
+
     return [...new Set([...getUpcomingTuesdays(), ...specialEventDates])]
-      .filter(d => !cancelledDates.includes(d) && d >= new Date().toISOString().split('T')[0])
+      .filter(d => !cancelledDates.includes(d) && d >= today)
       .sort();
 };
 
@@ -83,7 +91,7 @@ export const getSelectableDates = (specialEventDates: string[], allBookings: Boo
 
     const combinedDates = Array.from(new Set([...tuesdays, ...specialDays, ...bookingDays])).sort();
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalIsoDateString();
 
     return combinedDates
       .filter(date => date >= today)
