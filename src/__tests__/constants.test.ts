@@ -86,6 +86,14 @@ describe('getUpcomingTuesdays', () => {
       expect(dateStr).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });
+
+  it('uses local date rather than UTC date for morning AEST times', () => {
+    vi.useFakeTimers();
+    // AEST is UTC+10. Before 11am local time on 2026-03-04, UTC is still 2026-03-03.
+    vi.setSystemTime(new Date('2026-03-04T01:00:00Z'));
+    const tuesdays = getUpcomingTuesdays();
+    expect(tuesdays[0]).toBe('2026-03-10');
+  });
 });
 
 // ─── getSelectableDates ─────────────────────────────────
@@ -145,6 +153,15 @@ describe('getSelectableDates', () => {
     expect(values).not.toContain('2026-03-03');
   });
 
+  it('uses local date rather than UTC date for morning AEST times', () => {
+    vi.useFakeTimers();
+    // 2026-03-10 06:00 AEST is still 2026-03-09 20:00 UTC, but local date should be 2026-03-10.
+    vi.setSystemTime(new Date('2026-03-09T20:00:00Z'));
+    const result = getSelectableDates([], [], []);
+    expect(result[0]?.value).toBe('2026-03-10');
+  });
+});
+
   it('returns dates in ascending order', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-03-04T12:00:00Z'));
@@ -164,7 +181,6 @@ describe('getSelectableDates', () => {
     const march10Count = result.filter(d => d.value === '2026-03-10').length;
     expect(march10Count).toBe(1);
   });
-});
 
 // ─── getBookableDates ───────────────────────────────────
 
