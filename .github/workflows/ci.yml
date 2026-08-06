@@ -36,6 +36,21 @@ jobs:
       - name: Validate Firestore rules
         run: npx --yes firebase-tools@latest emulators:exec --only firestore --project demo-axesandales "node -e \"console.log('Firestore rules compiled')\""
 
+  firestore-emulator-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run test:emulator
+
   functions:
     runs-on: ubuntu-latest
     steps:
