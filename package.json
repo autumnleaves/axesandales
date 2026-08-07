@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "test": "vitest run --exclude \"**/*.emulator.test.ts\"",
     "test:watch": "vitest --exclude \"**/*.emulator.test.ts\"",
-    "test:emulator": "firebase --config firebase.emulator.json emulators:exec --only firestore --project demo-axesandales \"vitest run --config vitest.emulator.config.ts\"",
+    "test:emulator": "npx --yes firebase-tools@15.26.0 --config firebase.emulator.json emulators:exec --only firestore --project demo-axesandales \"vitest run --config vitest.emulator.config.ts\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "prepare": "husky"
@@ -36,7 +36,6 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "firebase-tools": "^15.26.0",
     "gh-pages": "^6.1.1",
     "husky": "^9.1.7",
     "postcss": "^8.4.38",

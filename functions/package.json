@@ -9,7 +9,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test:emulator": "firebase --config ../firebase.emulator.json emulators:exec --only firestore --project demo-axesandales \"vitest run --config vitest.emulator.config.mts\""
+    "test:emulator": "npx --yes firebase-tools@15.26.0 --config ../firebase.emulator.json emulators:exec --only firestore --project demo-axesandales \"vitest run --config vitest.emulator.config.mts\""
   },
   "engines": {
     "node": "22"
@@ -25,7 +25,6 @@
     "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.32.0",
-    "firebase-tools": "^15.26.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },
