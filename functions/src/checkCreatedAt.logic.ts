@@ -1,7 +1,7 @@
 /**
  * Check createdAt field status across all users.
  */
-import type {firestore} from "firebase-admin";
+import type {Firestore} from "firebase-admin/firestore";
 
 export interface CheckCreatedAtResult {
   withCount: number;
@@ -11,11 +11,11 @@ export interface CheckCreatedAtResult {
 
 /**
  * Reports how many user docs have/lack a createdAt field.
- * @param {firestore.Firestore} db - Firestore instance.
+ * @param {Firestore} db - Firestore instance.
  * @return {Promise<CheckCreatedAtResult>} Summary of the check.
  */
 export async function checkCreatedAt(
-  db: firestore.Firestore,
+  db: Firestore,
 ): Promise<CheckCreatedAtResult> {
   const snap = await db.collection("users").get();
   let earliest: Date | null = null;

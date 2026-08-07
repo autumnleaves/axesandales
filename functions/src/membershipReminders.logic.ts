@@ -5,7 +5,7 @@
  *  - 30 days before expiry
  *  - 7 days before expiry
  */
-import type {firestore} from "firebase-admin";
+import type {Firestore} from "firebase-admin/firestore";
 import {buildExpiryReminderEmail} from "./emailTemplates";
 
 export interface MembershipRemindersResult {
@@ -25,14 +25,14 @@ function getDateInDays(days: number): string {
 
 /**
  * Queue an email via the mail collection.
- * @param {firestore.Firestore} db - Firestore instance.
+ * @param {Firestore} db - Firestore instance.
  * @param {string} to - Recipient email address.
  * @param {string} subject - Email subject line.
  * @param {string} html - HTML email body.
  * @return {Promise<void>} Resolves when queued.
  */
 async function queueEmail(
-  db: firestore.Firestore,
+  db: Firestore,
   to: string,
   subject: string,
   html: string,
@@ -45,11 +45,11 @@ async function queueEmail(
 
 /**
  * Send membership expiry reminders.
- * @param {firestore.Firestore} db - Firestore instance.
+ * @param {Firestore} db - Firestore instance.
  * @return {Promise<MembershipRemindersResult>} Summary of the run.
  */
 export async function sendMembershipReminders(
-  db: firestore.Firestore,
+  db: Firestore,
 ): Promise<MembershipRemindersResult> {
   const targets = [
     {days: 30, label: "1-month"},

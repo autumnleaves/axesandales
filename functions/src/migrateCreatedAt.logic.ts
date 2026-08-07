@@ -3,7 +3,8 @@
  * For each user doc missing createdAt, looks up the Auth account's
  * creationTime and writes it to Firestore.
  */
-import type {auth, firestore} from "firebase-admin";
+import type {Auth} from "firebase-admin/auth";
+import type {Firestore} from "firebase-admin/firestore";
 
 export interface MigrateCreatedAtResult {
   updated: number;
@@ -13,13 +14,13 @@ export interface MigrateCreatedAtResult {
 
 /**
  * Backfill createdAt from Firebase Auth metadata.
- * @param {firestore.Firestore} db - Firestore instance.
- * @param {auth.Auth} adminAuth - Admin Auth instance.
+ * @param {Firestore} db - Firestore instance.
+ * @param {Auth} adminAuth - Admin Auth instance.
  * @return {Promise<MigrateCreatedAtResult>} Summary of the run.
  */
 export async function migrateCreatedAt(
-  db: firestore.Firestore,
-  adminAuth: auth.Auth,
+  db: Firestore,
+  adminAuth: Auth,
 ): Promise<MigrateCreatedAtResult> {
   const snap = await db.collection("users").get();
   console.log(`Found ${snap.size} user(s).`);

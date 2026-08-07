@@ -5,8 +5,8 @@
  * payment is needed to book tables, and records when the reminder was
  * last sent.
  */
-import type {firestore} from "firebase-admin";
-import * as admin from "firebase-admin";
+import type {Firestore} from "firebase-admin/firestore";
+import {FieldValue} from "firebase-admin/firestore";
 import {buildUnpaidReminderEmail} from "./emailTemplates";
 
 export interface UnpaidRemindersResult {
@@ -16,14 +16,14 @@ export interface UnpaidRemindersResult {
 
 /**
  * Queue an email via the mail collection.
- * @param {firestore.Firestore} db - Firestore instance.
+ * @param {Firestore} db - Firestore instance.
  * @param {string} to - Recipient email address.
  * @param {string} subject - Email subject line.
  * @param {string} html - HTML email body.
  * @return {Promise<void>} Resolves when queued.
  */
 async function queueEmail(
-  db: firestore.Firestore,
+  db: Firestore,
   to: string,
   subject: string,
   html: string,
@@ -36,11 +36,11 @@ async function queueEmail(
 
 /**
  * Send payment reminders to all unpaid members.
- * @param {firestore.Firestore} db - Firestore instance.
+ * @param {Firestore} db - Firestore instance.
  * @return {Promise<UnpaidRemindersResult>} Summary of the run.
  */
 export async function sendUnpaidReminders(
-  db: firestore.Firestore,
+  db: Firestore,
 ): Promise<UnpaidRemindersResult> {
   const twoWeeksAgo = new Date();
   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
@@ -96,8 +96,7 @@ export async function sendUnpaidReminders(
 
     // Track when this reminder was last sent
     await db.collection("users").doc(doc.id).update({
-      unpaidReminderLastSent:
-        admin.firestore.FieldValue.serverTimestamp(),
+      unpaidReminderLastSent: FieldValue.serverTimestamp(),
     });
 
     console.log(`  ✓ Reminder sent to ${email}`);

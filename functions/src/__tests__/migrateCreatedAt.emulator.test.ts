@@ -1,11 +1,11 @@
 import {describe, expect, it} from "vitest";
-import type {auth} from "firebase-admin";
+import type {Auth} from "firebase-admin/auth";
 import {getDb} from "../adminApp";
 import {migrateCreatedAt} from "../migrateCreatedAt.logic";
 
 // migrateCreatedAt only calls auth.listUsers(), so a minimal stub covers
 // it without standing up the Auth emulator for this one function.
-const makeFakeAuth = (records: Record<string, string>): auth.Auth => ({
+const makeFakeAuth = (records: Record<string, string>): Auth => ({
   listUsers: async () => ({
     users: Object.entries(records).map(([uid, creationTime]) => ({
       uid,
@@ -13,7 +13,7 @@ const makeFakeAuth = (records: Record<string, string>): auth.Auth => ({
     })),
     pageToken: undefined,
   }),
-}) as unknown as auth.Auth;
+}) as unknown as Auth;
 
 describe("migrateCreatedAt (Firestore emulator)", () => {
   it(
