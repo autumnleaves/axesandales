@@ -1,38 +1,14 @@
-import * as admin from "firebase-admin";
-
-const projectId = process.env.FIREBASE_PROJECT_ID;
-admin.initializeApp({projectId});
-const db = admin.firestore();
-
 /**
- * Check createdAt field status across all users.
- * @return {Promise<void>} Resolves when done.
+ * Standalone script — see checkCreatedAt.logic.ts for the actual logic.
  */
-async function main() {
-  const snap = await db.collection("users").get();
-  let earliest: Date | null = null;
-  let withCount = 0;
-  let withoutCount = 0;
+import {getDb} from "./adminApp";
+import {checkCreatedAt} from "./checkCreatedAt.logic";
 
-  for (const doc of snap.docs) {
-    const ca = doc.data().createdAt;
-    if (ca) {
-      withCount++;
-      const d = ca.toDate ? ca.toDate() : new Date(ca);
-      if (!earliest || d < earliest) earliest = d;
-    } else {
-      withoutCount++;
-    }
-  }
-
-  console.log("Users with createdAt:", withCount);
-  console.log("Users without createdAt:", withoutCount);
-  console.log("Earliest createdAt:", earliest?.toISOString() ?? "none");
+if (require.main === module) {
+  checkCreatedAt(getDb())
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });

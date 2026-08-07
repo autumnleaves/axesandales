@@ -11,15 +11,16 @@
     "init:firestore": "tsx src/scripts/seedFirestore.ts",
     "report:terrain-boxes": "tsx src/scripts/exportTerrainBookings.ts",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --exclude \"**/*.emulator.test.ts\"",
+    "test:watch": "vitest --exclude \"**/*.emulator.test.ts\"",
+    "test:emulator": "npx --yes firebase-tools@15.26.0 --config firebase.emulator.json emulators:exec --only firestore,auth --project demo-axesandales \"vitest run --config vitest.emulator.config.ts\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "prepare": "husky"
   },
   "dependencies": {
     "fastest-levenshtein": "^1.0.16",
-    "firebase": "^10.12.2",
+    "firebase": "^12.17.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.12.7"
@@ -29,7 +30,7 @@
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.19",
     "dotenv": "^17.3.1",
     "eslint": "^8.57.0",
@@ -40,8 +41,8 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "tsx": "^4.21.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.0",
     "vitest": "^4.0.18"
   }
 }
