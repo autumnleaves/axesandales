@@ -53,6 +53,7 @@ import {
     SWAP_MEET_TOTAL_STALLS,
     validateSwapMeetStallCount,
 } from './swapMeetService';
+import { assertAuthenticatedUser, resolveGoogleSignInProfile } from './authFlows';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -102,17 +103,7 @@ export const register = async (email: string, password: string, name: string): P
 // Google sign-in (creates profile if first time)
 export const signInWithGoogle = async (): Promise<{ user: User; isNewUser: boolean }> => {
     const result = await signInWithPopup(auth, googleProvider);
-    const { user } = result;
-    // Check if profile already exists
-    const existing = await getUserProfile(user.uid);
-    if (existing) return { user: existing, isNewUser: false };
-    // First-time Google user — create pending profile
-    const newUser = await createPendingProfile(
-        user.uid,
-        user.email || '',
-        user.displayName || user.email || 'New User'
-    );
-    return { user: newUser, isNewUser: true };
+    return resolveGoogleSignInProfile(result.user, getUserProfile, createPendingProfile);
 };
 
 // Login
@@ -127,11 +118,8 @@ export const logout = async () => {
 
 // Change Password
 export const changePassword = async (newPassword: string) => {
-    const user = auth.currentUser;
-    if (user) {
-        return updatePassword(user, newPassword);
-    }
-    throw new Error("No authenticated user found.");
+    const user = assertAuthenticatedUser(auth.currentUser);
+    return updatePassword(user, newPassword);
 };
 
 // Update display name (user profile + all their bookings)

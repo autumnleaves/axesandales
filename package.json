@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "test": "vitest run --exclude \"**/*.emulator.test.ts\"",
     "test:watch": "vitest --exclude \"**/*.emulator.test.ts\"",
-    "test:emulator": "npx --yes firebase-tools@15.26.0 --config firebase.emulator.json emulators:exec --only firestore --project demo-axesandales \"vitest run --config vitest.emulator.config.ts\"",
+    "test:emulator": "npx --yes firebase-tools@15.26.0 --config firebase.emulator.json emulators:exec --only firestore,auth --project demo-axesandales \"vitest run --config vitest.emulator.config.ts\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "prepare": "husky"
