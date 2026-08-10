@@ -43,6 +43,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [unavailableTables, setUnavailableTables] = useState<Map<string, string>>(new Map());
   const [unavailableTerrain, setUnavailableTerrain] = useState<Map<string, string>>(new Map());
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
+  const [showLayoutModal, setShowLayoutModal] = useState(false);
   const secondItemTerrainBoxes = terrainBoxes.filter(box => !box.disabled && (box.allowAsSecondItem || (box.maxBookingsPerNight ?? 1) > 1));
 
   useEffect(() => {
@@ -243,6 +244,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   }
 
   return (
+    <>
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm p-2 md:p-4 overflow-y-auto">
       <div className="bg-neutral-800 rounded-xl shadow-2xl max-w-5xl xl:max-w-7xl w-full border border-neutral-700 overflow-hidden flex flex-col max-h-[calc(100vh-1rem)] md:max-h-[calc(100vh-2rem)] mx-auto mt-2 md:mt-8 xl:mt-12">
         <div className="p-6 border-b border-neutral-700 flex justify-between items-center bg-neutral-800 shrink-0">
@@ -364,10 +366,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                         <div className="bg-neutral-900/50 p-4 rounded-lg border border-neutral-700 h-full">
                              <div className="flex justify-between items-center mb-3">
                                 <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">2. Select Table</h3>
-                                <div className="text-xs text-neutral-400">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-amber-600 mr-1"></span>Selected
-                                    <span className="inline-block w-2 h-2 rounded-full bg-red-900/50 ml-3 mr-1"></span>Taken
-                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowLayoutModal(true)}
+                                    className="flex items-center gap-1.5 text-xs text-neutral-300 hover:text-amber-400 border border-neutral-600 hover:border-amber-500/50 rounded px-2 py-1 transition-colors"
+                                >
+                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                                    Show Layout
+                                </button>
                              </div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 xl:gap-3 max-h-60 xl:max-h-72 overflow-y-auto pr-1">
                                 {tables.map(table => {
@@ -472,5 +478,34 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         </div>
       </div>
     </div>
+    {showLayoutModal && (
+        <div
+            className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm p-4 flex items-center justify-center"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Club table layout"
+            onClick={() => setShowLayoutModal(false)}
+        >
+            <div
+                className="bg-neutral-800 rounded-xl shadow-2xl max-w-3xl w-full border border-neutral-700 overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="p-4 border-b border-neutral-700 flex justify-between items-center">
+                    <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">Club Table Layout</h3>
+                    <button onClick={() => setShowLayoutModal(false)} className="text-neutral-400 hover:text-white transition-colors" aria-label="Close">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div className="p-4 max-h-[80vh] overflow-y-auto">
+                    <img
+                        src={`${import.meta.env.BASE_URL}images/club-layout-lite.jpg`}
+                        alt="Club table layout"
+                        className="w-full h-auto rounded-lg border border-neutral-700"
+                    />
+                </div>
+            </div>
+        </div>
+    )}
+    </>
   );
 };
