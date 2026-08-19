@@ -1,19 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-interface GameSystemAutocompleteProps {
+interface AutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  gameSystems: string[];
-  onNewSystem?: (name: string) => void;
+  options: string[];
   placeholder?: string;
   disabled?: boolean;
 }
 
-export const GameSystemAutocomplete: React.FC<GameSystemAutocompleteProps> = ({
+export const Autocomplete: React.FC<AutocompleteProps> = ({
   value,
   onChange,
-  gameSystems,
-  placeholder = 'e.g. Warhammer 40k',
+  options,
+  placeholder = '',
   disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,10 +21,10 @@ export const GameSystemAutocomplete: React.FC<GameSystemAutocompleteProps> = ({
   const listRef = useRef<HTMLUListElement>(null);
 
   const filtered = value.trim()
-    ? gameSystems.filter(g => g.toLowerCase().includes(value.toLowerCase()))
-    : gameSystems;
+    ? options.filter(g => g.toLowerCase().includes(value.toLowerCase()))
+    : options;
 
-  const exactMatch = gameSystems.some(g => g.toLowerCase() === value.trim().toLowerCase());
+  const exactMatch = options.some(g => g.toLowerCase() === value.trim().toLowerCase());
 
   useEffect(() => {
     setHighlightIndex(-1);
@@ -123,12 +122,12 @@ export const GameSystemAutocomplete: React.FC<GameSystemAutocompleteProps> = ({
           ref={listRef}
           className="absolute z-50 w-full mt-1 bg-neutral-800 border border-neutral-600 rounded-lg shadow-xl max-h-48 overflow-y-auto"
         >
-          {filtered.map((system, i) => (
+          {filtered.map((option, i) => (
             <li
-              key={system}
+              key={option}
               onMouseDown={(e) => {
                 e.preventDefault();
-                selectValue(system);
+                selectValue(option);
               }}
               onMouseEnter={() => setHighlightIndex(i)}
               className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
@@ -137,7 +136,7 @@ export const GameSystemAutocomplete: React.FC<GameSystemAutocompleteProps> = ({
                   : 'text-neutral-200 hover:bg-neutral-700'
               }`}
             >
-              {system}
+              {option}
             </li>
           ))}
           {value.trim() && !exactMatch && (

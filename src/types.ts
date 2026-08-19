@@ -7,6 +7,7 @@ export interface Table {
   id: string;
   name: string;
   size: TableSize;
+  order?: number;
 }
 
 export enum TerrainCategory {
@@ -19,13 +20,16 @@ export enum TerrainCategory {
 
 export interface TerrainBox {
   id: string;
-  category: TerrainCategory;
+  // Freeform: admins can type a new category directly in the admin UI,
+  // so this is no longer constrained to the TerrainCategory enum.
+  category: string;
   name: string;
   imageUrl: string;
   uploadedImageUrl?: string;
   disabled?: boolean;
   maxBookingsPerNight?: number;
   allowAsSecondItem?: boolean;
+  order?: number;
 }
 
 export interface Booking {

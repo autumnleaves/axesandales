@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AdminAuditEntry, Table, TerrainBox, TableSize, TerrainCategory, User, Booking, SwapMeet, SwapMeetBooking } from '../types';
+import { AdminAuditEntry, Table, TerrainBox, TableSize, User, Booking, SwapMeet, SwapMeetBooking } from '../types';
 import * as firebaseService from '../services/firebaseService';
 import { generateUUID } from '../utils';
+import { Autocomplete } from './Autocomplete';
 
 interface AdminViewProps {
   tables: Table[];
@@ -34,7 +35,7 @@ interface AdminViewProps {
 type AdminTab = 'dates' | 'users' | 'terrain' | 'tables' | 'gameSystems';
 
 const defaultTable: Omit<Table, 'id'> = { name: '', size: TableSize.LARGE };
-const defaultTerrain: Omit<TerrainBox, 'id'> = { name: '', category: TerrainCategory.SCIFI, imageUrl: '' };
+const defaultTerrain: Omit<TerrainBox, 'id'> = { name: '', category: '', imageUrl: '' };
 
 
 const DragHandle: React.FC = () => (
@@ -52,6 +53,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 }) => {
   const [editingTable, setEditingTable] = useState<Table | Partial<Table> | null>(null);
   const [editingTerrain, setEditingTerrain] = useState<TerrainBox | Partial<TerrainBox> | null>(null);
+  const terrainCategories = Array.from(new Set(terrainBoxes.map(box => box.category))).sort((a, b) => a.localeCompare(b));
   const [userFilter, setUserFilter] = useState<'all' | 'pending' | 'member' | 'admin'>('all');
   const [userSearch, setUserSearch] = useState('');
   
@@ -113,9 +115,9 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if (draggedIndex === -1 || targetIndex === -1) return;
     const [reorderedItem] = items.splice(draggedIndex, 1);
     items.splice(targetIndex, 0, reorderedItem);
-    onTablesChange(items);
+    onTablesChange(items.map((item, index) => ({ ...item, order: index })));
   };
-  
+
   const handleTerrainDrop = (e: React.DragEvent, dropTargetId: string) => {
     e.preventDefault();
     const draggedItemId = e.dataTransfer.getData('terrain');
@@ -126,7 +128,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if (draggedIndex === -1 || targetIndex === -1) return;
     const [reorderedItem] = items.splice(draggedIndex, 1);
     items.splice(targetIndex, 0, reorderedItem);
-    onTerrainChange(items);
+    onTerrainChange(items.map((item, index) => ({ ...item, order: index })));
   };
 
   const handleSaveTable = () => {
@@ -134,7 +136,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if ('id' in editingTable) { 
       onTablesChange(tables.map(t => t.id === editingTable.id ? editingTable as Table : t));
     } else { 
-      const newTable = { ...editingTable, id: `custom-${generateUUID()}` } as Table;
+      const newTable = { ...editingTable, id: `custom-${generateUUID()}`, order: tables.length } as Table;
       onTablesChange([...tables, newTable]);
     }
     setEditingTable(null);
@@ -151,7 +153,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         updatedTerrain = editingTerrain as TerrainBox;
         await onTerrainChange(terrainBoxes.map(t => t.id === updatedTerrain.id ? updatedTerrain : t));
     } else {
-        updatedTerrain = { ...editingTerrain, id: `custom-${generateUUID()}` } as TerrainBox;
+        updatedTerrain = { ...editingTerrain, id: `custom-${generateUUID()}`, order: terrainBoxes.length } as TerrainBox;
         await onTerrainChange([...terrainBoxes, updatedTerrain]);
     }
     await recordTerrainAudit('saved', updatedTerrain);
@@ -555,9 +557,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
     <div className="bg-neutral-800 p-4 rounded-lg mt-4 border border-amber-700/50 space-y-3">
         <h3 className="font-bold text-amber-500">{'id' in (editingTerrain || {}) ? 'Edit Terrain' : 'Add New Terrain'}</h3>
         <input type="text" placeholder="Name" value={editingTerrain?.name} onChange={(e) => setEditingTerrain({...editingTerrain, name: e.target.value })} className="w-full bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white" />
-        <select value={editingTerrain?.category} onChange={(e) => setEditingTerrain({...editingTerrain, category: e.target.value as TerrainCategory })} className="w-full bg-neutral-900 border border-neutral-600 rounded px-3 py-2 text-white">
-            {Object.values(TerrainCategory).map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
+        <Autocomplete
+            value={editingTerrain?.category ?? ''}
+            onChange={(category) => setEditingTerrain({...editingTerrain, category })}
+            options={terrainCategories}
+            placeholder="e.g. Sci-Fi"
+        />
         <div className="flex items-center gap-3">
             <label className="text-sm text-neutral-400 whitespace-nowrap">Max bookings per night</label>
             <input
