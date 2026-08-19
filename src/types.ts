@@ -7,6 +7,7 @@ export interface Table {
   id: string;
   name: string;
   size: TableSize;
+  order?: number;
 }
 
 export enum TerrainCategory {
@@ -26,6 +27,7 @@ export interface TerrainBox {
   disabled?: boolean;
   maxBookingsPerNight?: number;
   allowAsSecondItem?: boolean;
+  order?: number;
 }
 
 export interface Booking {

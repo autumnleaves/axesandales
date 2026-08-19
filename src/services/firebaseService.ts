@@ -30,7 +30,7 @@ import {
     mapBookingSnapshotData,
 } from './firebaseBookingHelpers';
 import {
-    sortFirestoreDocumentsById,
+    sortByOrder,
     slugifyFirestoreId,
 } from './firebaseDocumentHelpers';
 import {
@@ -460,7 +460,7 @@ export const cancelBooking = async (id: string, cancelledByUserId: string): Prom
 export const subscribeTables = (callback: (tables: Table[]) => void): Unsubscribe => {
     const q = query(collection(db, 'tables'));
     return onSnapshot(q, (snapshot) => {
-        callback(sortFirestoreDocumentsById(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Table))));
+        callback(sortByOrder(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Table))));
     }, (error) => {
         console.error('Error subscribing to tables:', error);
     });
@@ -485,7 +485,7 @@ export const saveTablesToDb = async (tables: Table[]): Promise<void> => {
 export const subscribeTerrainBoxes = (callback: (boxes: TerrainBox[]) => void): Unsubscribe => {
     const q = query(collection(db, 'terrainBoxes'));
     return onSnapshot(q, (snapshot) => {
-        callback(sortFirestoreDocumentsById(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TerrainBox))));
+        callback(sortByOrder(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as TerrainBox))));
     }, (error) => {
         console.error('Error subscribing to terrain boxes:', error);
     });

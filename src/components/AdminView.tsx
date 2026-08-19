@@ -113,9 +113,9 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if (draggedIndex === -1 || targetIndex === -1) return;
     const [reorderedItem] = items.splice(draggedIndex, 1);
     items.splice(targetIndex, 0, reorderedItem);
-    onTablesChange(items);
+    onTablesChange(items.map((item, index) => ({ ...item, order: index })));
   };
-  
+
   const handleTerrainDrop = (e: React.DragEvent, dropTargetId: string) => {
     e.preventDefault();
     const draggedItemId = e.dataTransfer.getData('terrain');
@@ -126,7 +126,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if (draggedIndex === -1 || targetIndex === -1) return;
     const [reorderedItem] = items.splice(draggedIndex, 1);
     items.splice(targetIndex, 0, reorderedItem);
-    onTerrainChange(items);
+    onTerrainChange(items.map((item, index) => ({ ...item, order: index })));
   };
 
   const handleSaveTable = () => {
@@ -134,7 +134,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if ('id' in editingTable) { 
       onTablesChange(tables.map(t => t.id === editingTable.id ? editingTable as Table : t));
     } else { 
-      const newTable = { ...editingTable, id: `custom-${generateUUID()}` } as Table;
+      const newTable = { ...editingTable, id: `custom-${generateUUID()}`, order: tables.length } as Table;
       onTablesChange([...tables, newTable]);
     }
     setEditingTable(null);
@@ -151,7 +151,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         updatedTerrain = editingTerrain as TerrainBox;
         await onTerrainChange(terrainBoxes.map(t => t.id === updatedTerrain.id ? updatedTerrain : t));
     } else {
-        updatedTerrain = { ...editingTerrain, id: `custom-${generateUUID()}` } as TerrainBox;
+        updatedTerrain = { ...editingTerrain, id: `custom-${generateUUID()}`, order: terrainBoxes.length } as TerrainBox;
         await onTerrainChange([...terrainBoxes, updatedTerrain]);
     }
     await recordTerrainAudit('saved', updatedTerrain);
