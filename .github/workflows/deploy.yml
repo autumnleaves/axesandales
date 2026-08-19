@@ -61,6 +61,8 @@ jobs:
               - 'firestore.indexes.json'
             functions:
               - 'functions/**'
+              - '!functions/**/__tests__/**'
+              - '!functions/**/*.test.ts'
 
   deploy-firestore-rules:
     needs: [detect-changes, validate-firestore-rules]
