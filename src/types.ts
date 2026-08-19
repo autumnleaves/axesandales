@@ -20,7 +20,9 @@ export enum TerrainCategory {
 
 export interface TerrainBox {
   id: string;
-  category: TerrainCategory;
+  // Freeform: admins can type a new category directly in the admin UI,
+  // so this is no longer constrained to the TerrainCategory enum.
+  category: string;
   name: string;
   imageUrl: string;
   uploadedImageUrl?: string;

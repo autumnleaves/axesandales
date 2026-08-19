@@ -18,7 +18,7 @@ import { getSelectableDates, getBookableDates } from './constants';
 import { canModifyBooking, getSecondaryTerrainStatus } from './services/bookingService';
 import { sanitizeBookingGameSystem, shouldAutoAddGameSystem } from './utils/bookingFlowHelpers';
 import { resolveSelectedBookingDate } from './utils/bookingDateSelection';
-import { AdminAuditEntry, Booking, User, Table, TableSize, TerrainBox, TerrainCategory, ClubEvent, SwapMeet, SwapMeetBooking } from './types';
+import { AdminAuditEntry, Booking, User, Table, TableSize, TerrainBox, ClubEvent, SwapMeet, SwapMeetBooking } from './types';
 
 type PageKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet';
 
@@ -515,6 +515,7 @@ const secondaryTerrainBoxes = terrainBoxes.filter(tb => !tb.disabled && ((tb.max
 const regularTerrainBoxes = terrainBoxes.filter(tb =>
   (tb.maxBookingsPerNight ?? 1) <= 1 && (!tb.disabled || bookedTerrainIds.has(tb.id))
 );
+const regularTerrainCategories = Array.from(new Set(regularTerrainBoxes.map(tb => tb.category)));
 
 return (
 <div className="space-y-8">
@@ -601,7 +602,7 @@ Table Status
             </div>
         ) : (
             <div className="space-y-3">
-                {Object.values(TerrainCategory).map(category => {
+                {regularTerrainCategories.map(category => {
                     const boxesInCategory = regularTerrainBoxes.filter(tb => tb.category === category);
                     if (boxesInCategory.length === 0) return null;
                     const availableCount = boxesInCategory.filter(tb => !bookedTerrainIds.has(tb.id)).length;

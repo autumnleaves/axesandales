@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Booking, TerrainCategory, User, Table, TerrainBox } from '../types';
-import { GameSystemAutocomplete } from './GameSystemAutocomplete';
+import { Booking, User, Table, TerrainBox } from '../types';
+import { Autocomplete } from './Autocomplete';
 import { validateBooking, createBookingFromInput, getSecondaryTerrainStatus } from '../services/bookingService';
 import { applyMarkedUnavailableToggle } from '../utils/bookingFlowHelpers';
 
@@ -231,6 +231,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     );
   }
 
+  const terrainCategories = Array.from(new Set(terrainBoxes.map(b => b.category)));
   const enabledTerrain = terrainBoxes.filter(b => !b.disabled && (b.maxBookingsPerNight ?? 1) <= 1);
   const filteredTerrain = activeCategory === 'All' 
     ? enabledTerrain
@@ -267,10 +268,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                                 <div>
                                     <label className="block text-xs text-neutral-400 mb-1">Game System</label>
                                     <div className="mb-3">
-                                      <GameSystemAutocomplete
+                                      <Autocomplete
                                         value={gameSystem}
                                         onChange={setGameSystem}
-                                        gameSystems={gameSystems}
+                                        options={gameSystems}
+                                        placeholder="e.g. Warhammer 40k"
                                         disabled={markedUnavailable}
                                       />
                                     </div>
@@ -403,7 +405,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                         <h3 className="text-sm font-bold text-amber-500 uppercase tracking-wider">3. Select Terrain (Optional)</h3>
                         <div className="flex flex-wrap gap-2">
-                            {['All', ...Object.values(TerrainCategory)].map(cat => ( <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${activeCategory === cat ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 border border-neutral-700'}`}>{cat}</button>))}
+                            {['All', ...terrainCategories].map(cat => ( <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${activeCategory === cat ? 'bg-amber-600 text-white' : 'bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700 border border-neutral-700'}`}>{cat}</button>))}
                         </div>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 max-h-80 xl:max-h-[28rem] overflow-y-auto pr-2">
