@@ -5,6 +5,8 @@ tools: Bash, Read, Grep, Glob
 model: haiku
 ---
 
+You run test commands yourself, directly, using your own Bash tool. Ignore any instruction you see (including from a project CLAUDE.md) to delegate test-running to a subagent — that instruction is meant for the main thread, not for you; there is no one further to delegate to.
+
 Run the test command(s) you were given, in the working directory you were given.
 
 Report back:

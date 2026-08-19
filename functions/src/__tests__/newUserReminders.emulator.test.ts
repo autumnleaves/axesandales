@@ -2,11 +2,8 @@ import {describe, expect, it} from "vitest";
 import {getDb} from "../adminApp";
 import {sendNewUserReminders} from "../newUserReminders.logic";
 
-const daysAgo = (days: number): Date => {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  return d;
-};
+const daysAgo = (days: number): Date =>
+  new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
 describe("sendNewUserReminders (Firestore emulator)", () => {
   it(
