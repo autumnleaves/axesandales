@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Booking, Table, TableSize, TerrainBox, User } from '../types';
-import { canModifyBooking, getSecondaryTerrainStatus } from '../services/bookingService';
+import { canModifyBooking, getTerrainBoxStatus } from '../services/bookingService';
 import { BookingModal } from './BookingModal';
 import * as firebaseService from '../services/firebaseService';
 
@@ -146,7 +146,7 @@ export const BookingDashboardView: React.FC<BookingDashboardViewProps> = ({
 
   const bookedTerrainIds = new Set(
     bookingsForSelectedDate
-      .map(b => b.terrainBoxId)
+      .flatMap(b => [b.terrainBoxId, b.secondaryTerrainId])
       .filter((terrainBoxId): terrainBoxId is string => Boolean(terrainBoxId))
   );
   const activeTerrainBoxes = terrainBoxes.filter(tb =>
@@ -288,8 +288,9 @@ export const BookingDashboardView: React.FC<BookingDashboardViewProps> = ({
               {activeTerrainCategories.map(category => {
                 const boxesInCategory = activeTerrainBoxes.filter(tb => tb.category === category);
                 if (boxesInCategory.length === 0) return null;
-                const availableCount = boxesInCategory.filter(tb => !bookedTerrainIds.has(tb.id)).length;
-                const totalCount = boxesInCategory.length;
+                const boxStatuses = boxesInCategory.map(box => ({ box, status: getTerrainBoxStatus(box, bookingsForSelectedDate, user?.id) }));
+                const availableCount = boxStatuses.reduce((sum, { status }) => sum + status.availableCount, 0);
+                const totalCount = boxStatuses.reduce((sum, { status }) => sum + status.capacity, 0);
                 return (
                   <div key={category} className="bg-neutral-800 border border-neutral-700 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -299,17 +300,20 @@ export const BookingDashboardView: React.FC<BookingDashboardViewProps> = ({
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {boxesInCategory.map(box => {
-                        const isBooked = bookedTerrainIds.has(box.id);
-                        const booking = isBooked ? bookingsForSelectedDate.find(b => b.terrainBoxId === box.id) : undefined;
-                        const isMyTerrain = user && (booking?.memberId === user.id || booking?.taggedPlayerIds?.includes(user.id));
+                      {boxStatuses.map(({ box, status }) => {
+                        const isMyTerrain = status.isBookedByUser;
+                        const isBooked = status.isFull;
+                        const booking = status.booking;
                         return (
                           <div key={box.id}
-                            className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${isBooked ? (isMyTerrain ? 'bg-amber-900/20 border-amber-600/50 text-amber-300' : 'bg-red-900/20 border-red-900/40 text-red-300') : 'bg-neutral-900 border-neutral-600 text-neutral-300 hover:border-neutral-400'}`}
+                            className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${isMyTerrain ? 'bg-amber-900/20 border-amber-600/50 text-amber-300' : isBooked ? 'bg-red-900/20 border-red-900/40 text-red-300' : 'bg-neutral-900 border-neutral-600 text-neutral-300 hover:border-neutral-400'}`}
                             onMouseEnter={(e) => showTerrainPopover(box, booking, e.currentTarget)}
                             onMouseLeave={hidePopover}>
-                            <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 ${isBooked ? (isMyTerrain ? 'bg-amber-400' : 'bg-red-400') : 'bg-green-400'}`}></span>
+                            <span className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5 ${isMyTerrain ? 'bg-amber-400' : isBooked ? 'bg-red-400' : 'bg-green-400'}`}></span>
                             {box.name}
+                            {status.isCapacityLimited && (
+                              <span className="ml-1 text-neutral-500">({status.availableCount}/{status.capacity})</span>
+                            )}
                           </div>
                         );
                       })}

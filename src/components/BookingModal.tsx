@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Booking, User, Table, TerrainBox } from '../types';
 import { Autocomplete } from './Autocomplete';
-import { validateBooking, createBookingFromInput, getSecondaryTerrainStatus } from '../services/bookingService';
+import { validateBooking, createBookingFromInput, getTerrainBoxStatus } from '../services/bookingService';
 import { applyMarkedUnavailableToggle } from '../utils/bookingFlowHelpers';
 
 interface BookingModalProps {
@@ -41,10 +41,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [unavailableTables, setUnavailableTables] = useState<Map<string, string>>(new Map());
-  const [unavailableTerrain, setUnavailableTerrain] = useState<Map<string, string>>(new Map());
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [showLayoutModal, setShowLayoutModal] = useState(false);
-  const secondItemTerrainBoxes = terrainBoxes.filter(box => !box.disabled && (box.allowAsSecondItem || (box.maxBookingsPerNight ?? 1) > 1));
+  const secondItemTerrainBoxes = terrainBoxes.filter(box => !box.disabled && box.allowAsSecondItem);
 
   useEffect(() => {
     if (!isOpen) {
@@ -86,23 +85,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   useEffect(() => {
     const bookings = allBookings.filter(b => b.date === date);
     const takenTables = new Map<string, string>();
-    const takenTerrain = new Map<string, string>();
-    const takenSecondaryTerrain = new Map<string, string>();
 
     bookings.forEach(b => {
         if (editingBooking && b.id === editingBooking.id) return;
         takenTables.set(b.tableId, b.memberName);
-        if (b.terrainBoxId) takenTerrain.set(b.terrainBoxId, b.memberName);
-        if (b.secondaryTerrainId) {
-          const existing = takenSecondaryTerrain.get(b.secondaryTerrainId);
-          if (!existing) {
-            takenSecondaryTerrain.set(b.secondaryTerrainId, b.memberName);
-          }
-        }
     });
 
     setUnavailableTables(takenTables);
-    setUnavailableTerrain(takenTerrain);
   }, [date, editingBooking, isOpen, allBookings]);
 
   // Close player dropdown when clicking outside
@@ -232,11 +221,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   }
 
   const terrainCategories = Array.from(new Set(terrainBoxes.map(b => b.category)));
-  const enabledTerrain = terrainBoxes.filter(b => !b.disabled && (b.maxBookingsPerNight ?? 1) <= 1);
-  const filteredTerrain = activeCategory === 'All' 
+  const enabledTerrain = terrainBoxes.filter(b => !b.disabled && !b.allowAsSecondItem);
+  const filteredTerrain = activeCategory === 'All'
     ? enabledTerrain
     : enabledTerrain.filter(b => b.category === activeCategory);
-    
+
+  const activeTerrainBookingsForDate = allBookings.filter(b => b.date === date && b.status === 'active' && b.id !== editingBooking?.id);
+
   const handleDateChange = (newDate: string) => {
     setDate(newDate);
     setSelectedTableId('');
@@ -411,7 +402,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 max-h-80 xl:max-h-[28rem] overflow-y-auto pr-2">
                         {activeCategory === 'All' && (<button onClick={() => { setSelectedTerrainId(''); setSelectedSecondaryTerrainId(''); }} className={`relative rounded-lg border-2 overflow-hidden h-36 xl:h-44 flex flex-col items-center justify-center transition-all group ${selectedTerrainId === '' && selectedSecondaryTerrainId === '' ? 'border-amber-500 bg-neutral-700 shadow-lg shadow-amber-900/20' : 'border-neutral-700 bg-neutral-800 hover:bg-neutral-700'}`}><span className="text-2xl mb-2 opacity-70 group-hover:opacity-100 transition-opacity">🚫</span><span className={`text-xs font-bold ${selectedTerrainId === '' && selectedSecondaryTerrainId === '' ? 'text-amber-500' : 'text-neutral-400'}`}>No Box Needed</span></button>)}
                         {secondItemTerrainBoxes.filter(box => activeCategory === 'All' || activeCategory === box.category).map(box => {
-                            const status = getSecondaryTerrainStatus(box, allBookings.filter(b => b.date === date && b.status === 'active' && b.id !== editingBooking?.id), user.id);
+                            const status = getTerrainBoxStatus(box, activeTerrainBookingsForDate, user.id);
                             const isSelected = selectedSecondaryTerrainId === box.id;
                             const isDisabled = status.isFull && !isSelected;
                             return (
@@ -438,9 +429,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             );
                         })}
                         {filteredTerrain.map(box => {
-                             const takenBy = unavailableTerrain.get(box.id);
-                             const isTaken = !!takenBy;
+                             const status = getTerrainBoxStatus(box, activeTerrainBookingsForDate, user.id);
                              const isSelected = selectedTerrainId === box.id;
+                             const isTaken = status.isFull && !isSelected;
+                             const takenBy = activeTerrainBookingsForDate.find(b => b.terrainBoxId === box.id || b.secondaryTerrainId === box.id)?.memberName;
                              return (
                                 <button key={box.id} disabled={isTaken} onClick={() => setSelectedTerrainId(box.id)} className={`relative rounded-lg border-2 overflow-hidden h-36 xl:h-44 text-left transition-all group ${isSelected ? 'border-amber-500 ring-2 ring-amber-500/50 transform scale-[1.02] z-10' : 'border-neutral-700 hover:border-neutral-500'} ${isTaken ? 'opacity-75 cursor-not-allowed' : ''}`}>
                                     <img src={box.uploadedImageUrl || box.imageUrl} alt={box.name} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${isTaken ? 'grayscale' : ''}`} />
@@ -448,9 +440,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                                     <div className="absolute bottom-0 left-0 p-3 w-full">
                                         <div className={`font-bold text-xs leading-tight ${isSelected ? 'text-amber-400' : 'text-white'}`}>{box.name}</div>
                                         <div className="text-[10px] text-neutral-400 uppercase tracking-wider mt-0.5">{box.category}</div>
+                                        {status.isCapacityLimited && (
+                                          <div className={`text-[10px] mt-1 ${status.isFull ? 'text-red-300' : status.isBookedByUser ? 'text-amber-300' : 'text-neutral-300'}`}>
+                                            {status.availableCount}/{status.capacity} available
+                                          </div>
+                                        )}
                                     </div>
                                     {isSelected && (<div className="absolute top-2 right-2 bg-amber-500 rounded-full p-1 shadow-lg"><svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>)}
-                                    {isTaken && (<div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-2 text-center"><span className="text-red-500 text-[10px] font-bold border border-red-500/50 px-2 py-0.5 rounded bg-black/50 mb-1">IN USE</span><span className="text-neutral-300 text-[10px] font-medium truncate w-full">{takenBy}</span></div>)}
+                                    {isTaken && (<div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm p-2 text-center"><span className="text-red-500 text-[10px] font-bold border border-red-500/50 px-2 py-0.5 rounded bg-black/50 mb-1">IN USE</span><span className="text-neutral-300 text-[10px] font-medium truncate w-full">{status.isCapacityLimited ? 'All sets booked' : takenBy}</span></div>)}
                                 </button>
                              );
                         })}

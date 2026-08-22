@@ -31,35 +31,41 @@ export const getBookingSaveConflicts = (
   }
 
   if (booking.terrainBoxId) {
-    const terrainConflict = activeBookings.find(
-      existing =>
-        existing.id !== booking.id &&
-        existing.date === booking.date &&
-        existing.status === 'active' &&
-        existing.terrainBoxId === booking.terrainBoxId
-    );
-    if (terrainConflict) {
-      const name = terrainConflict.memberName || 'another member';
-      conflicts.push(`That terrain set has just been reserved by ${name}.`);
-    }
+    const conflict = findTerrainCapacityConflict(booking.terrainBoxId, booking, activeBookings);
+    if (conflict) conflicts.push(conflict);
   }
 
   if (booking.secondaryTerrainId) {
-    const secondaryTerrainBox = INITIAL_TERRAIN_BOXES.find(box => box.id === booking.secondaryTerrainId);
-    const secondaryTerrainCapacity = secondaryTerrainBox?.maxBookingsPerNight ?? 1;
-    if (secondaryTerrainCapacity > 1) {
-      const secondaryTerrainBookings = activeBookings.filter(
-        existing =>
-          existing.id !== booking.id &&
-          existing.date === booking.date &&
-          existing.status === 'active' &&
-          existing.secondaryTerrainId === booking.secondaryTerrainId
-      );
-      if (secondaryTerrainBookings.length >= secondaryTerrainCapacity) {
-        conflicts.push('That terrain set is fully booked for this date.');
-      }
-    }
+    const conflict = findTerrainCapacityConflict(booking.secondaryTerrainId, booking, activeBookings);
+    if (conflict) conflicts.push(conflict);
   }
 
   return conflicts;
+};
+
+// A terrain box may be booked as one booking's primary terrain and another's
+// secondary/extra item, so both slots draw from the same box's capacity.
+const findTerrainCapacityConflict = (
+  terrainBoxId: string,
+  booking: Booking,
+  activeBookings: Booking[]
+): string | undefined => {
+  const box = INITIAL_TERRAIN_BOXES.find(b => b.id === terrainBoxId);
+  const capacity = box?.maxBookingsPerNight ?? 1;
+
+  const usingBookings = activeBookings.filter(
+    existing =>
+      existing.id !== booking.id &&
+      existing.date === booking.date &&
+      existing.status === 'active' &&
+      (existing.terrainBoxId === terrainBoxId || existing.secondaryTerrainId === terrainBoxId)
+  );
+
+  if (usingBookings.length < capacity) return undefined;
+
+  if (capacity > 1) {
+    return 'That terrain set is fully booked for this date.';
+  }
+  const name = usingBookings[0].memberName || 'another member';
+  return `That terrain set has just been reserved by ${name}.`;
 };

@@ -102,4 +102,18 @@ describe('getBookingSaveConflicts', () => {
 
     expect(conflicts).toEqual([]);
   });
+
+  it('counts primary and secondary usage of the same box against one shared capacity', () => {
+    // 40K-FOOTPRINTS has maxBookingsPerNight: 5 — 1 primary + 4 secondary usages already fill it.
+    const booking = makeBooking({ id: 'booking-2', tableId: 'L2', secondaryTerrainId: '40K-FOOTPRINTS' });
+    const conflicts = getBookingSaveConflicts(booking, [
+      makeBooking({ id: 'as-primary', tableId: 'L3', terrainBoxId: '40K-FOOTPRINTS' }),
+      makeBooking({ id: 'as-secondary-1', tableId: 'L4', secondaryTerrainId: '40K-FOOTPRINTS' }),
+      makeBooking({ id: 'as-secondary-2', tableId: 'L5', secondaryTerrainId: '40K-FOOTPRINTS' }),
+      makeBooking({ id: 'as-secondary-3', tableId: 'L6', secondaryTerrainId: '40K-FOOTPRINTS' }),
+      makeBooking({ id: 'as-secondary-4', tableId: 'L7', secondaryTerrainId: '40K-FOOTPRINTS' }),
+    ]);
+
+    expect(conflicts).toContain('That terrain set is fully booked for this date.');
+  });
 });

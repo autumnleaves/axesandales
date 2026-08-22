@@ -26,7 +26,7 @@ export interface BookingValidationResult {
   error?: string;
 }
 
-export interface SecondaryTerrainStatus {
+export interface TerrainBoxStatus {
   capacity: number;
   availableCount: number;
   isCapacityLimited: boolean;
@@ -35,14 +35,19 @@ export interface SecondaryTerrainStatus {
   booking?: Booking;
 }
 
-export function getSecondaryTerrainStatus(
+/**
+ * Status of a terrain box's booked capacity for a given set of bookings.
+ * A box may be used as either a booking's primary terrain or its secondary
+ * (extra) item — both count against the same physical box's capacity.
+ */
+export function getTerrainBoxStatus(
   box: TerrainBox,
   bookings: Booking[],
   currentUserId?: string
-): SecondaryTerrainStatus {
+): TerrainBoxStatus {
   const capacity = box.maxBookingsPerNight ?? 1;
   const activeBookings = bookings.filter(
-    booking => booking.status === 'active' && booking.secondaryTerrainId === box.id
+    booking => booking.status === 'active' && (booking.terrainBoxId === box.id || booking.secondaryTerrainId === box.id)
   );
   const availableCount = Math.max(0, capacity - activeBookings.length);
   const booking = currentUserId
@@ -53,7 +58,7 @@ export function getSecondaryTerrainStatus(
     capacity,
     availableCount,
     isCapacityLimited: capacity > 1,
-    isFull: capacity > 1 && availableCount <= 0,
+    isFull: availableCount <= 0,
     isBookedByUser: Boolean(booking),
     booking,
   };
@@ -96,36 +101,43 @@ export function validateBooking(
     }
   }
 
-  // Check terrain availability (if selected)
+  // Check terrain capacity (if selected) — a terrain box may be booked as one
+  // booking's primary terrain and another's secondary/extra item, so both slots
+  // draw from the same box's capacity and must be checked the same way.
   if (input.terrainBoxId) {
-    const terrainConflict = context.existingBookings.find(
-      b => b.date === input.date &&
-           b.terrainBoxId === input.terrainBoxId &&
-           b.status === 'active' &&
-           b.id !== context.editingBookingId
-    );
-    if (terrainConflict) {
-      return { valid: false, error: `Terrain is already reserved by ${terrainConflict.memberName}.` };
-    }
+    const error = findTerrainCapacityError(input.terrainBoxId, input, context);
+    if (error) return { valid: false, error };
   }
 
   if (input.secondaryTerrainId) {
-    const secondaryTerrainBox = (context.terrainBoxes ?? INITIAL_TERRAIN_BOXES).find(box => box.id === input.secondaryTerrainId);
-    const secondaryTerrainCapacity = secondaryTerrainBox?.maxBookingsPerNight ?? 1;
-    if (secondaryTerrainCapacity > 1) {
-      const secondaryTerrainBookings = context.existingBookings.filter(
-        b => b.date === input.date &&
-          b.secondaryTerrainId === input.secondaryTerrainId &&
-          b.status === 'active' &&
-          b.id !== context.editingBookingId
-      );
-      if (secondaryTerrainBookings.length >= secondaryTerrainCapacity) {
-        return { valid: false, error: 'That terrain set is fully booked for this date.' };
-      }
-    }
+    const error = findTerrainCapacityError(input.secondaryTerrainId, input, context);
+    if (error) return { valid: false, error };
   }
 
   return { valid: true };
+}
+
+function findTerrainCapacityError(
+  terrainBoxId: string,
+  input: BookingInput,
+  context: BookingValidationContext
+): string | undefined {
+  const box = (context.terrainBoxes ?? INITIAL_TERRAIN_BOXES).find(b => b.id === terrainBoxId);
+  const capacity = box?.maxBookingsPerNight ?? 1;
+
+  const usingBookings = context.existingBookings.filter(
+    b => b.date === input.date &&
+      b.status === 'active' &&
+      b.id !== context.editingBookingId &&
+      (b.terrainBoxId === terrainBoxId || b.secondaryTerrainId === terrainBoxId)
+  );
+
+  if (usingBookings.length < capacity) return undefined;
+
+  if (capacity > 1) {
+    return 'That terrain set is fully booked for this date.';
+  }
+  return `Terrain is already reserved by ${usingBookings[0].memberName}.`;
 }
 
 /**
