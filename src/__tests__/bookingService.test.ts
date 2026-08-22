@@ -5,7 +5,7 @@ import {
   sanitizeBookingForFirestore,
   canModifyBooking,
   buildCancellationUpdate,
-  getSecondaryTerrainStatus,
+  getTerrainBoxStatus,
   BookingInput,
   BookingValidationContext,
 } from '../services/bookingService';
@@ -225,9 +225,64 @@ describe('validateBooking', () => {
     expect(result.valid).toBe(false);
     expect(result.error).toMatch(/fully booked/i);
   });
+
+  it('applies capacity checks to a primary terrain pick, not just capacity 1', () => {
+    const terrainBoxes: TerrainBox[] = [{
+      id: 'multi-set',
+      category: 'Sci-Fi' as never,
+      name: 'Multi Set',
+      imageUrl: '',
+      maxBookingsPerNight: 2,
+    }];
+    const existing = [makeBooking({ id: 'other-booking', terrainBoxId: 'multi-set', date: '2026-03-10' })];
+    const result = validateBooking(
+      makeInput({ terrainBoxId: 'multi-set', date: '2026-03-10', tableId: 'L2' }),
+      makeContext({ existingBookings: existing, terrainBoxes })
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it('rejects a primary terrain pick once its capacity is used up, even without any secondary bookings', () => {
+    const terrainBoxes: TerrainBox[] = [{
+      id: 'multi-set',
+      category: 'Sci-Fi' as never,
+      name: 'Multi Set',
+      imageUrl: '',
+      maxBookingsPerNight: 2,
+    }];
+    const existing = [
+      makeBooking({ id: 'b1', terrainBoxId: 'multi-set', date: '2026-03-10' }),
+      makeBooking({ id: 'b2', terrainBoxId: 'multi-set', date: '2026-03-10', memberId: 'user-3' }),
+    ];
+    const result = validateBooking(
+      makeInput({ terrainBoxId: 'multi-set', date: '2026-03-10', tableId: 'L2' }),
+      makeContext({ existingBookings: existing, terrainBoxes })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.error).toMatch(/fully booked/i);
+  });
+
+  it('counts primary and secondary usage of the same box against one shared capacity', () => {
+    const existing = [
+      makeBooking({ id: 'as-primary', terrainBoxId: '40K-FOOTPRINTS', date: '2026-03-10' }),
+      ...Array.from({ length: 4 }, (_, index) => makeBooking({
+        id: `as-secondary-${index}`,
+        date: '2026-03-10',
+        terrainBoxId: null,
+        secondaryTerrainId: '40K-FOOTPRINTS',
+        memberId: `user-${index + 2}`,
+      })),
+    ];
+    const result = validateBooking(
+      makeInput({ date: '2026-03-10', tableId: 'L2', secondaryTerrainId: '40K-FOOTPRINTS' }),
+      makeContext({ existingBookings: existing })
+    );
+    expect(result.valid).toBe(false);
+    expect(result.error).toMatch(/fully booked/i);
+  });
 });
 
-describe('getSecondaryTerrainStatus', () => {
+describe('getTerrainBoxStatus', () => {
   const box: TerrainBox = {
     id: '40K-FOOTPRINTS',
     category: 'Warhammer 40k' as never,
@@ -236,29 +291,50 @@ describe('getSecondaryTerrainStatus', () => {
     maxBookingsPerNight: 3,
   };
 
-  it('reports when a secondary terrain item is fully booked', () => {
+  it('reports when a terrain box is fully booked', () => {
     const bookings = Array.from({ length: 3 }, (_, index) => makeBooking({
       id: `footprint-${index}`,
       secondaryTerrainId: box.id,
       memberId: `user-${index + 2}`,
     }));
 
-    const status = getSecondaryTerrainStatus(box, bookings, 'user-1');
+    const status = getTerrainBoxStatus(box, bookings, 'user-1');
 
     expect(status.isFull).toBe(true);
     expect(status.availableCount).toBe(0);
   });
 
-  it('reports when the current user already has that secondary terrain booked', () => {
+  it('reports when the current user already has that terrain box booked', () => {
     const bookings = [
       makeBooking({ id: 'mine', secondaryTerrainId: box.id, memberId: 'user-1' }),
       makeBooking({ id: 'other', secondaryTerrainId: box.id, memberId: 'user-2' }),
     ];
 
-    const status = getSecondaryTerrainStatus(box, bookings, 'user-1');
+    const status = getTerrainBoxStatus(box, bookings, 'user-1');
 
     expect(status.isBookedByUser).toBe(true);
     expect(status.booking?.memberId).toBe('user-1');
+  });
+
+  it('counts primary and secondary bookings of the box together', () => {
+    const bookings = [
+      makeBooking({ id: 'primary', terrainBoxId: box.id, memberId: 'user-2' }),
+      makeBooking({ id: 'secondary', secondaryTerrainId: box.id, memberId: 'user-3' }),
+    ];
+
+    const status = getTerrainBoxStatus(box, bookings, 'user-1');
+
+    expect(status.availableCount).toBe(1);
+  });
+
+  it('reports capacity-1 boxes as full once a single booking uses them', () => {
+    const singleBox: TerrainBox = { id: 'terrain-1', category: 'Sci-Fi' as never, name: 'Solo Set', imageUrl: '' };
+    const bookings = [makeBooking({ id: 'b1', terrainBoxId: singleBox.id })];
+
+    const status = getTerrainBoxStatus(singleBox, bookings);
+
+    expect(status.isFull).toBe(true);
+    expect(status.isCapacityLimited).toBe(false);
   });
 });
 
