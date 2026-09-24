@@ -138,18 +138,18 @@ export const AboutView: React.FC = () => {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
           {[
-            { name: 'Glyn', role: 'President' },
-            { name: 'Daniel', role: 'Vice President' },
+            { name: 'Tom', role: 'President' },
+            { name: 'Glyn', role: 'Vice President' },
             { name: 'Jason/Dutch Law', role: 'Treasurer' },
             { name: 'Tyrone', role: 'Secretary' },
+            { name: 'Daniel', role: 'Club Photographer' },
             { name: 'Jason/GCUGreyArea', role: 'General Committee' },
-            { name: 'Scoob', role: 'General Committee' },
             { name: 'Stew', role: 'General Committee' },
             { name: 'Rob/Fodzilla', role: 'General Committee' },
             { name: 'Rob D', role: 'General Committee' },
             { name: 'Enrique/Soulstress', role: 'General Committee' },
             { name: 'Adam', role: 'General Committee' },
-            { name: 'Tom', role: 'IT Guy' },
+            { name: "Tim", role: "General Committee" },
             
           ].map((member) => (
             <div key={member.name} className="bg-neutral-900/50 rounded-lg p-3 border border-neutral-700 text-center">
