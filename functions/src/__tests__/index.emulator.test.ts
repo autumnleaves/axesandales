@@ -7,6 +7,7 @@ import {
   onSwapMeetBookingCreated,
   onSwapMeetBookingUpdated,
 } from "../index";
+import {MAIL_COLLECTION} from "../mail";
 
 const db = getFirestore();
 
@@ -53,11 +54,11 @@ describe("index.ts booking triggers (Firestore emulator)", () => {
       makeCreatedEvent({bookingId: "booking-1"}, baseBooking),
     );
 
-    const mailSnap = await db.collection("mail").get();
+    const mailSnap = await db.collection(MAIL_COLLECTION).get();
     expect(mailSnap.docs).toHaveLength(1);
     const mail = mailSnap.docs[0].data();
-    expect(mail.to).toEqual(["user1@example.com"]);
-    expect(mail.message.subject).toContain("Booking Confirmed");
+    expect(mail.to).toBe("user1@example.com");
+    expect(mail.subject).toContain("Booking Confirmed");
   });
 
   it(
@@ -68,7 +69,7 @@ describe("index.ts booking triggers (Firestore emulator)", () => {
         {...baseBooking, memberId: "missing-user"},
       ));
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.empty).toBe(true);
     },
   );
@@ -86,9 +87,9 @@ describe("index.ts booking triggers (Firestore emulator)", () => {
         makeUpdatedEvent({bookingId: "booking-1"}, baseBooking, after),
       );
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.docs).toHaveLength(1);
-      expect(mailSnap.docs[0].data().message.subject)
+      expect(mailSnap.docs[0].data().subject)
         .toContain("Booking Cancelled");
     },
   );
@@ -107,9 +108,9 @@ describe("index.ts booking triggers (Firestore emulator)", () => {
         makeUpdatedEvent({bookingId: "booking-1"}, baseBooking, after),
       );
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.docs).toHaveLength(1);
-      expect(mailSnap.docs[0].data().message.subject)
+      expect(mailSnap.docs[0].data().subject)
         .toContain("Booking Updated");
     },
   );
@@ -126,7 +127,7 @@ describe("index.ts booking triggers (Firestore emulator)", () => {
         {bookingId: "booking-1"}, baseBooking, {...baseBooking},
       ));
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.empty).toBe(true);
     },
   );
@@ -154,9 +155,9 @@ describe("index.ts membership audit trigger (Firestore emulator)", () => {
         },
       ));
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.docs).toHaveLength(1);
-      expect(mailSnap.docs[0].data().message.subject)
+      expect(mailSnap.docs[0].data().subject)
         .toContain("Membership Activated");
     },
   );
@@ -182,7 +183,7 @@ describe("index.ts membership audit trigger (Firestore emulator)", () => {
         },
       ));
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.empty).toBe(true);
     },
   );
@@ -212,9 +213,9 @@ describe("index.ts swap meet booking triggers (Firestore emulator)", () => {
         {...baseSwapMeetBooking, status: "pending", paid: false},
       ));
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.docs).toHaveLength(1);
-      expect(mailSnap.docs[0].data().message.subject)
+      expect(mailSnap.docs[0].data().subject)
         .toBe("Swap Meet Booking Received");
     },
   );
@@ -235,9 +236,9 @@ describe("index.ts swap meet booking triggers (Firestore emulator)", () => {
         makeUpdatedEvent({bookingId: "sm-1"}, before, after),
       );
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       const recipients = mailSnap.docs
-        .map((doc) => doc.data().to[0]).sort();
+        .map((doc) => doc.data().to).sort();
       expect(recipients).toEqual([
         "axesandalescommittee@gmail.com", "user1@example.com",
       ]);
@@ -259,9 +260,9 @@ describe("index.ts swap meet booking triggers (Firestore emulator)", () => {
         makeUpdatedEvent({bookingId: "sm-1"}, before, after),
       );
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       expect(mailSnap.docs).toHaveLength(1);
-      expect(mailSnap.docs[0].data().message.subject)
+      expect(mailSnap.docs[0].data().subject)
         .toBe("Swap Meet Booking Confirmed");
     },
   );

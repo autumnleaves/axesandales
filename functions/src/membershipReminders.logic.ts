@@ -7,6 +7,7 @@
  */
 import type {Firestore} from "firebase-admin/firestore";
 import {buildExpiryReminderEmail} from "./emailTemplates";
+import {queueEmail} from "./mail";
 
 export interface MembershipRemindersResult {
   totalSent: number;
@@ -21,26 +22,6 @@ function getDateInDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d.toISOString().split("T")[0];
-}
-
-/**
- * Queue an email via the mail collection.
- * @param {Firestore} db - Firestore instance.
- * @param {string} to - Recipient email address.
- * @param {string} subject - Email subject line.
- * @param {string} html - HTML email body.
- * @return {Promise<void>} Resolves when queued.
- */
-async function queueEmail(
-  db: Firestore,
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
-  await db.collection("mail").add({
-    to: [to],
-    message: {subject, html},
-  });
 }
 
 /**
@@ -98,7 +79,7 @@ export async function sendMembershipReminders(
       const html = buildExpiryReminderEmail(
         name, targetDate, days,
       );
-      await queueEmail(db, email, subject, html);
+      await queueEmail(db, {to: email, subject, html});
       console.log(
         `  ✓ ${label} reminder sent to ${email}`,
       );

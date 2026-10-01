@@ -15,10 +15,10 @@
 | Firebase client config (`VITE_FIREBASE_*`) | GitHub Actions secrets | Written to `.env` in the `deploy.yml` build step |
 | Firebase service account | GitHub Actions secret `FIREBASE_SERVICE_ACCOUNT` | Passed as `GCP_SA_KEY` to `firebase-action` |
 | Google Maps embed key | GitHub Actions secret `VITE_GOOGLE_MAPS_EMBED_KEY` | Written to `.env` in the build step |
-| Resend SMTP credentials | Firebase extension runtime config | Configured via `firebase ext:configure` — **not** stored in the repo |
+| Resend SMTP password (API key) | Secret Manager secret `SMTP_PASSWORD` | Set via `firebase functions:secrets:set SMTP_PASSWORD`; bound to the `sendQueuedEmail` function at deploy — **not** stored in the repo |
 
 ### Firestore security rules
-- The `mail` collection must remain **server-only** (`allow read, write: if false`).
+- The `outbox` collection must remain **server-only** (`allow read, write: if false`).
 - Any new collection should default to **deny-all** and only open the minimum necessary access.
 - Prefer owner-scoped writes (`request.auth.uid == resource.data.ownerId`) over blanket authenticated access.
 
@@ -26,7 +26,7 @@
 
 - **Frontend**: React + TypeScript, built with Vite, deployed to GitHub Pages.  
 - **Backend**: Firebase (Firestore, Cloud Functions v2, Firebase Auth, Cloud Storage).  
-- **Email**: Firestore `mail` collection → `firestore-send-email` extension → Resend SMTP.  
+- **Email**: `queueEmail()` writes to the Firestore `outbox` collection → `sendQueuedEmail` Cloud Function → Resend SMTP. All email code lives in `functions/src/mail/`.  
 - **CI/CD**: GitHub Actions (`.github/workflows/deploy.yml`). Deploys frontend, Firestore rules, and Cloud Functions on push to `main`.
 
 ## Code Style
