@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {getDb} from "../adminApp";
 import {sendMembershipReminders} from "../membershipReminders.logic";
+import {MAIL_COLLECTION} from "../mail";
 
 const getDateInDays = (days: number): string => {
   const d = new Date();
@@ -41,9 +42,9 @@ describe("sendMembershipReminders (Firestore emulator)", () => {
       const result = await sendMembershipReminders(db);
       expect(result.totalSent).toBe(2);
 
-      const mailSnap = await db.collection("mail").get();
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
       const recipients = mailSnap.docs
-        .map((doc) => doc.data().to[0]).sort();
+        .map((doc) => doc.data().to).sort();
       expect(recipients).toEqual([
         "seven@example.com", "thirty@example.com",
       ]);
@@ -55,7 +56,7 @@ describe("sendMembershipReminders (Firestore emulator)", () => {
     const result = await sendMembershipReminders(db);
 
     expect(result.totalSent).toBe(0);
-    const mailSnap = await db.collection("mail").get();
+    const mailSnap = await db.collection(MAIL_COLLECTION).get();
     expect(mailSnap.empty).toBe(true);
   });
 });

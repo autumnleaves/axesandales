@@ -28,7 +28,7 @@ for every member made rolling renewals impractical. Expiry reminders now go out 
 - **Swap meet stall bookings**, with member pricing calculated and validated server-side
 - **Events**, club layout and usage stats
 - Member and admin accounts, with roles enforced in Firestore security rules
-- Transactional email: Firestore `mail` collection → `firestore-send-email` extension → Resend
+- Transactional email: Firestore `outbox` collection → `sendQueuedEmail` Cloud Function → Resend
 
 ## Stack
 
