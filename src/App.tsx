@@ -11,6 +11,7 @@ import { ClubLayoutView } from './components/ClubLayoutView';
 import { WelcomeView } from './components/WelcomeView';
 import { EventsView } from './components/EventsView';
 import { SwapMeetView } from './components/SwapMeetView';
+import { GalleryView } from './components/GalleryView';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import * as firebaseService from './services/firebaseService';
@@ -20,7 +21,7 @@ import { sanitizeBookingGameSystem, shouldAutoAddGameSystem } from './utils/book
 import { resolveSelectedBookingDate } from './utils/bookingDateSelection';
 import { AdminAuditEntry, Booking, User, Table, TableSize, TerrainBox, ClubEvent, SwapMeet, SwapMeetBooking } from './types';
 
-type PageKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet';
+type PageKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet' | 'gallery';
 
 const DEV_USER: User = {
   id: 'dev-local',
@@ -48,6 +49,7 @@ const PATH_TO_PAGE: Record<string, PageKey> = {
   '/welcome': 'welcome',
   '/events': 'events',
   '/swap-meet': 'swapMeet',
+  '/gallery': 'gallery',
 };
 
 const PAGE_TO_PATH: Record<PageKey, string> = {
@@ -61,6 +63,7 @@ const PAGE_TO_PATH: Record<PageKey, string> = {
   welcome: '/welcome',
   events: '/events',
   swapMeet: '/swap-meet',
+  gallery: '/gallery',
 };
 
 const getPageFromUrl = (): PageKey => {
@@ -279,6 +282,13 @@ useEffect(() => {
     navigateTo('about');
   }
 }, [currentPage, navigateTo, showSwapMeetTab, siteConfigLoaded]);
+
+// Gallery is admin-only while it's in preview
+useEffect(() => {
+  if (!loading && currentPage === 'gallery' && !user?.isAdmin && !isDev) {
+    navigateTo('about');
+  }
+}, [currentPage, loading, navigateTo, user]);
 
 useEffect(() => {
 if (!scheduleLoaded) return;
@@ -672,6 +682,7 @@ return (
 {currentPage === 'membership' && <MembershipView />}
 {currentPage === 'layout' && <ClubLayoutView />}
 {currentPage === 'stats' && <StatsView currentUser={user || (isDev ? DEV_USER : null)} showToast={showToast} />}
+{currentPage === 'gallery' && (user?.isAdmin || isDev) && <GalleryView />}
 {currentPage === 'events' && <EventsView events={events} user={user} eventTags={eventTags} nextClubDate={bookableDates[0] || null} />}
 {currentPage === 'swapMeet' && showSwapMeetTab && (
   <SwapMeetView
