@@ -36,12 +36,17 @@ const email = {
 
 /**
  * Queue an email and build the created event the trigger would receive.
+ * Picks the email the trigger hasn't processed yet: documents come back
+ * in (random) ID order, not creation order, so "the last one" may be an
+ * email an earlier run already sent.
  * @return {Promise<object>} The event, with its document snapshot.
  */
 const queueAndMakeEvent = async () => {
   await queueEmail(db, email);
   const snap = await db.collection(MAIL_COLLECTION).get();
-  const doc = snap.docs[snap.docs.length - 1];
+  const pending = snap.docs.filter((doc) => !doc.get("delivery"));
+  expect(pending).toHaveLength(1);
+  const doc = pending[0];
   return {params: {emailId: doc.id}, data: doc};
 };
 
