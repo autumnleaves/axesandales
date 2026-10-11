@@ -283,13 +283,6 @@ useEffect(() => {
   }
 }, [currentPage, navigateTo, showSwapMeetTab, siteConfigLoaded]);
 
-// Gallery is admin-only while it's in preview
-useEffect(() => {
-  if (!loading && currentPage === 'gallery' && !user?.isAdmin && !isDev) {
-    navigateTo('about');
-  }
-}, [currentPage, loading, navigateTo, user]);
-
 useEffect(() => {
 if (!scheduleLoaded) return;
 const linkedBookingDate = currentPage === 'home' ? getBookingDateFromUrl() : null;
@@ -682,7 +675,7 @@ return (
 {currentPage === 'membership' && <MembershipView />}
 {currentPage === 'layout' && <ClubLayoutView />}
 {currentPage === 'stats' && <StatsView currentUser={user || (isDev ? DEV_USER : null)} showToast={showToast} />}
-{currentPage === 'gallery' && (user?.isAdmin || isDev) && <GalleryView />}
+{currentPage === 'gallery' && <GalleryView />}
 {currentPage === 'events' && <EventsView events={events} user={user} eventTags={eventTags} nextClubDate={bookableDates[0] || null} />}
 {currentPage === 'swapMeet' && showSwapMeetTab && (
   <SwapMeetView
