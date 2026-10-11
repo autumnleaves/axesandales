@@ -1,0 +1,361 @@
+{
+  "id": "golden-axe-2026",
+  "title": "Golden Axe 2026",
+  "year": 2026,
+  "entries": [
+    {
+      "id": "aaron-m",
+      "name": "Aaron M.",
+      "award": "gold",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/aaron-m.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/aaron-m-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "adam-g",
+      "name": "Adam G.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/adam-g.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/adam-g-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "andrew-c",
+      "name": "Andrew C.",
+      "award": "silver",
+      "specialAwards": [
+        "People's Champion"
+      ],
+      "image": {
+        "src": "gallery/golden-axe-2026/andrew-c.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/andrew-c-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "andrew-w",
+      "name": "Andrew W.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/andrew-w.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/andrew-w-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "ben-i",
+      "name": "Ben I.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/ben-i.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/ben-i-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "ben-r",
+      "name": "Ben R.",
+      "award": "silver",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/ben-r.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/ben-r-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "chris-o",
+      "name": "Chris O.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/chris-o.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/chris-o-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "craig-r",
+      "name": "Craig R.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/craig-r.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/craig-r-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "enrique-p",
+      "name": "Enrique P.",
+      "award": "commended",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/enrique-p.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/enrique-p-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "eric-v",
+      "name": "Eric V.",
+      "award": "commended",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/eric-v.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/eric-v-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "jason-b",
+      "name": "Jason B.",
+      "award": "commended",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/jason-b.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/jason-b-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "matt-b",
+      "name": "Matt B.",
+      "award": "gold",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/matt-b.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/matt-b-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "matt-m",
+      "name": "Matt M.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/matt-m.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/matt-m-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "michael-b",
+      "name": "Michael B.",
+      "award": "gold",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/michael-b.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/michael-b-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "michael-m",
+      "name": "Michael M.",
+      "award": "silver",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/michael-m.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/michael-m-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "mitch-b",
+      "name": "Mitch B.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/mitch-b.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/mitch-b-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "phillip-e",
+      "name": "Phillip E.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/phillip-e.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/phillip-e-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "rob-d",
+      "name": "Rob D.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/rob-d.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/rob-d-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "scott-c",
+      "name": "Scott C.",
+      "award": "commended",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/scott-c.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/scott-c-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "scott-v",
+      "name": "Scott V.",
+      "award": "commended",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/scott-v.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/scott-v-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "simon-l",
+      "name": "Simon L.",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/simon-l.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/simon-l-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
+      "id": "vanessa-v",
+      "name": "Vanessa V.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery/golden-axe-2026/vanessa-v.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery/golden-axe-2026/vanessa-v-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "sourceDir": "docs",
+  "outputDir": "public/gallery",
+  "aspectRatio": "4:5",
+  "events": [
+    {
+      "id": "golden-axe-2026",
+      "title": "Golden Axe 2026",
+      "year": 2026,
+      "sourceFolder": "Golden Axe 2026",
+      "photosFolder": "Photos",
+      "displayNames": {
+        "5": "Ben I.",
+        "6": "Ben R.",
+        "17": "Matt M."
+      }
+    }
+  ]
+}

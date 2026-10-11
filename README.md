@@ -60,6 +60,39 @@ cp .env.example .env.local   # fill in your Firebase config
 npm run dev
 ```
 
+## Painting gallery
+
+The Gallery tab shows painting competition entries, one tab per event. It's generated from the
+results export and photos rather than stored in Firestore:
+
+```bash
+npm run gallery:build
+```
+
+This reads each event listed in [`gallery.config.json`](./gallery.config.json) from `docs/<sourceFolder>/`
+(gitignored, since the exports contain contact details) and writes display names, awards and resized,
+metadata-stripped photos to `public/gallery/`, which is committed and deployed.
+
+Photos are cropped to the `aspectRatio` in the config (4:5). The crop is chosen automatically to keep the
+whole model in frame, then the printed award label, then centre the model. Each build writes a review sheet
+to `reports/gallery/<event id>-crops.jpg` showing every crop on the original photo (red outline = the build
+warned about it).
+
+To add an event (e.g. Golden Axe 2027):
+
+1. Put the results CSV export (needs `ENTRY ID`, `NAME` and `PLACING` columns; `PC` is optional) in
+   `docs/Golden Axe 2027/`, and one photo per entrant in `docs/Golden Axe 2027/Photos/`.
+   Name photos after the entrant, e.g. `GA2027_Jason.jpg` or `GA2027_Michael_McK.jpg`. Tokens with digits
+   (`GA2027`, `02`) are ignored, and the rest is matched against the entrant's first name and surname.
+2. Add the event to `gallery.config.json`. Optional keys: `displayNames` (override the
+   "First L." name by entry ID), `photos` (assign a photo filename to an entry ID when it can't be
+   matched by name), `resultsFile` (if there's more than one results CSV in the folder) and `crops`
+   (override a photo's crop: `{ "GA2027_Jason.jpg": 120 }` starts the crop 120px from the top of the original).
+3. Run `npm run gallery:build`, check the crop review sheet, then commit `gallery.config.json` and `public/gallery/`.
+
+The build fails loudly if a photo matches no entrant, more than one entrant, or someone marked `DNE`.
+Events whose source folder isn't present locally are skipped and their existing output is kept.
+
 ## Tests
 
 ```bash
