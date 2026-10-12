@@ -40,21 +40,15 @@ jobs:
         id: filter
         with:
           base: ${{ steps.base.outputs.sha }}
+          # A file must match every pattern in a filter, so "!" exclusions
+          # actually exclude. Each filter therefore needs a single include.
+          predicate-quantifier: 'every'
           filters: |
             site:
-              - 'src/**'
+              - '{src/**,public/**,index.html,package.json,package-lock.json,vite.config.ts,postcss.config.js,tailwind.config.js,tsconfig.json,tsconfig.node.json}'
               - '!src/**/__tests__/**'
               - '!src/**/*.test.ts'
               - '!src/**/*.test.tsx'
-              - 'public/**'
-              - 'index.html'
-              - 'package.json'
-              - 'package-lock.json'
-              - 'vite.config.ts'
-              - 'postcss.config.js'
-              - 'tailwind.config.js'
-              - 'tsconfig.json'
-              - 'tsconfig.node.json'
             rules:
               - 'firestore.rules'
             indexes:
