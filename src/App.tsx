@@ -66,15 +66,19 @@ const PAGE_TO_PATH: Record<PageKey, string> = {
   gallery: '/gallery',
 };
 
+// Trailing slashes are stripped so "/gallery/" (e.g. from a cached redirect) still resolves.
+const getPathFromUrl = (): string =>
+  window.location.pathname.replace(BASE_PATH, '').replace(/\/+$/, '') || '/';
+
 const getPageFromUrl = (): PageKey => {
-  const path = window.location.pathname.replace(BASE_PATH, '') || '/';
+  const path = getPathFromUrl();
   return PATH_TO_PAGE[path] || 'about';
 };
 
 const DATE_QUERY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const getBookingDateFromUrl = (): string | null => {
-  const path = window.location.pathname.replace(BASE_PATH, '') || '/';
+  const path = getPathFromUrl();
   if (PATH_TO_PAGE[path] !== 'home') return null;
 
   const date = new URLSearchParams(window.location.search).get('date');

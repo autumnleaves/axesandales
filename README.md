@@ -71,7 +71,7 @@ npm run gallery:build
 
 This reads each event listed in [`gallery.config.json`](./gallery.config.json) from `docs/<sourceFolder>/`
 (gitignored, since the exports contain contact details) and writes display names, awards and resized,
-metadata-stripped photos to `public/gallery/`, which is committed and deployed.
+metadata-stripped photos to `public/gallery-data/`, which is committed and deployed.
 
 Photos are cropped to the `aspectRatio` in the config (4:5). The crop is chosen automatically to keep the
 whole model in frame, then the printed award label, then centre the model. Each build writes a review sheet
@@ -88,7 +88,7 @@ To add an event (e.g. Golden Axe 2027):
    "First L." name by entry ID), `photos` (assign a photo filename to an entry ID when it can't be
    matched by name), `resultsFile` (if there's more than one results CSV in the folder) and `crops`
    (override a photo's crop: `{ "GA2027_Jason.jpg": 120 }` starts the crop 120px from the top of the original).
-3. Run `npm run gallery:build`, check the crop review sheet, then commit `gallery.config.json` and `public/gallery/`.
+3. Run `npm run gallery:build`, check the crop review sheet, then commit `gallery.config.json` and `public/gallery-data/`.
 
 The build fails loudly if a photo matches no entrant, more than one entrant, or someone marked `DNE`.
 Events whose source folder isn't present locally are skipped and their existing output is kept.
