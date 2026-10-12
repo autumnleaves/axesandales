@@ -140,7 +140,7 @@ export const GalleryView: React.FC = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetchJson<GalleryIndex>('gallery/index.json')
+    fetchJson<GalleryIndex>('gallery-data/index.json')
       .then(loaded => {
         if (cancelled) return;
         setIndex(loaded);
@@ -153,7 +153,7 @@ export const GalleryView: React.FC = () => {
   useEffect(() => {
     if (!selectedEventId || eventsById[selectedEventId]) return;
     let cancelled = false;
-    fetchJson<GalleryEvent>(`gallery/${selectedEventId}/event.json`)
+    fetchJson<GalleryEvent>(`gallery-data/${selectedEventId}/event.json`)
       .then(loaded => !cancelled && setEventsById(prev => ({ ...prev, [loaded.id]: loaded })))
       .catch(err => !cancelled && setError((err as Error).message));
     return () => { cancelled = true; };

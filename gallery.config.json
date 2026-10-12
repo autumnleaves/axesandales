@@ -1,6 +1,6 @@
 {
   "sourceDir": "docs",
-  "outputDir": "public/gallery",
+  "outputDir": "public/gallery-data",
   "aspectRatio": "4:5",
   "events": [
     {

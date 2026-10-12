@@ -9,12 +9,12 @@
       "award": "gold",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/aaron-m.jpg",
+        "src": "gallery-data/golden-axe-2026/aaron-m.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/aaron-m-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/aaron-m-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -25,12 +25,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/adam-g.jpg",
+        "src": "gallery-data/golden-axe-2026/adam-g.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/adam-g-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/adam-g-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -43,12 +43,12 @@
         "People's Champion"
       ],
       "image": {
-        "src": "gallery/golden-axe-2026/andrew-c.jpg",
+        "src": "gallery-data/golden-axe-2026/andrew-c.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/andrew-c-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/andrew-c-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -59,12 +59,12 @@
       "award": null,
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/andrew-w.jpg",
+        "src": "gallery-data/golden-axe-2026/andrew-w.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/andrew-w-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/andrew-w-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -75,12 +75,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/ben-i.jpg",
+        "src": "gallery-data/golden-axe-2026/ben-i.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/ben-i-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/ben-i-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -91,12 +91,12 @@
       "award": "silver",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/ben-r.jpg",
+        "src": "gallery-data/golden-axe-2026/ben-r.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/ben-r-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/ben-r-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -107,12 +107,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/chris-o.jpg",
+        "src": "gallery-data/golden-axe-2026/chris-o.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/chris-o-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/chris-o-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -123,12 +123,12 @@
       "award": null,
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/craig-r.jpg",
+        "src": "gallery-data/golden-axe-2026/craig-r.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/craig-r-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/craig-r-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -139,12 +139,12 @@
       "award": "commended",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/enrique-p.jpg",
+        "src": "gallery-data/golden-axe-2026/enrique-p.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/enrique-p-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/enrique-p-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -155,12 +155,12 @@
       "award": "commended",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/eric-v.jpg",
+        "src": "gallery-data/golden-axe-2026/eric-v.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/eric-v-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/eric-v-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -171,12 +171,12 @@
       "award": "commended",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/jason-b.jpg",
+        "src": "gallery-data/golden-axe-2026/jason-b.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/jason-b-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/jason-b-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -187,12 +187,12 @@
       "award": "gold",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/matt-b.jpg",
+        "src": "gallery-data/golden-axe-2026/matt-b.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/matt-b-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/matt-b-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -203,12 +203,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/matt-m.jpg",
+        "src": "gallery-data/golden-axe-2026/matt-m.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/matt-m-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/matt-m-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -219,12 +219,12 @@
       "award": "gold",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/michael-b.jpg",
+        "src": "gallery-data/golden-axe-2026/michael-b.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/michael-b-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/michael-b-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -235,12 +235,12 @@
       "award": "silver",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/michael-m.jpg",
+        "src": "gallery-data/golden-axe-2026/michael-m.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/michael-m-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/michael-m-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -251,12 +251,12 @@
       "award": null,
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/mitch-b.jpg",
+        "src": "gallery-data/golden-axe-2026/mitch-b.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/mitch-b-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/mitch-b-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -267,12 +267,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/phillip-e.jpg",
+        "src": "gallery-data/golden-axe-2026/phillip-e.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/phillip-e-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/phillip-e-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -283,12 +283,12 @@
       "award": null,
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/rob-d.jpg",
+        "src": "gallery-data/golden-axe-2026/rob-d.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/rob-d-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/rob-d-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -299,12 +299,12 @@
       "award": "commended",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/scott-c.jpg",
+        "src": "gallery-data/golden-axe-2026/scott-c.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/scott-c-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/scott-c-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -315,12 +315,12 @@
       "award": "commended",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/scott-v.jpg",
+        "src": "gallery-data/golden-axe-2026/scott-v.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/scott-v-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/scott-v-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -331,12 +331,12 @@
       "award": "bronze",
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/simon-l.jpg",
+        "src": "gallery-data/golden-axe-2026/simon-l.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/simon-l-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/simon-l-thumb.jpg",
         "width": 576,
         "height": 720
       }
@@ -347,12 +347,12 @@
       "award": null,
       "specialAwards": [],
       "image": {
-        "src": "gallery/golden-axe-2026/vanessa-v.jpg",
+        "src": "gallery-data/golden-axe-2026/vanessa-v.jpg",
         "width": 1280,
         "height": 1600
       },
       "thumbnail": {
-        "src": "gallery/golden-axe-2026/vanessa-v-thumb.jpg",
+        "src": "gallery-data/golden-axe-2026/vanessa-v-thumb.jpg",
         "width": 576,
         "height": 720
       }
