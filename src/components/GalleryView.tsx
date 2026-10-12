@@ -6,6 +6,7 @@ import {
   countGalleryAwards,
   filterGalleryEntries,
   galleryAssetUrl,
+  hasGalleryAwards,
   type GalleryAwardFilter,
 } from '../utils/galleryHelpers';
 
@@ -28,6 +29,8 @@ const fetchJson = async <T,>(path: string): Promise<T> => {
   if (!response.ok) throw new Error(`Failed to load ${path} (${response.status})`);
   return response.json() as Promise<T>;
 };
+
+const imageAlt = (entry: GalleryEntry) => (entry.name ? `Painted miniature by ${entry.name}` : 'Painted miniature');
 
 const AwardBadges: React.FC<{ entry: GalleryEntry }> = ({ entry }) => (
   <div className="flex flex-wrap gap-1.5">
@@ -80,7 +83,7 @@ const Lightbox: React.FC<LightboxProps> = ({ entries, index, eventTitle, onChang
       className="fixed inset-0 z-[150] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={`${entry.name}'s entry`}
+      aria-label={entry.name ? `${entry.name}'s entry` : 'Entry'}
       onClick={onClose}
     >
       <button
@@ -107,11 +110,11 @@ const Lightbox: React.FC<LightboxProps> = ({ entries, index, eventTitle, onChang
           src={galleryAssetUrl(entry.image.src)}
           width={entry.image.width}
           height={entry.image.height}
-          alt={`Painted miniature by ${entry.name}`}
+          alt={imageAlt(entry)}
           className="max-h-[80vh] w-auto h-auto max-w-full rounded-lg object-contain"
         />
         <figcaption className="flex flex-wrap items-center justify-center gap-3 text-center">
-          <span className="text-white font-semibold text-lg">{entry.name}</span>
+          {entry.name && <span className="text-white font-semibold text-lg">{entry.name}</span>}
           <AwardBadges entry={entry} />
           <span className="text-neutral-500 text-sm">
             {eventTitle} · {index + 1} of {entries.length}
@@ -161,6 +164,8 @@ export const GalleryView: React.FC = () => {
 
   const selectedEvent = selectedEventId ? eventsById[selectedEventId] : undefined;
   const counts = useMemo(() => countGalleryAwards(selectedEvent?.entries ?? []), [selectedEvent]);
+  // Hidden until the event loads, and for events without placings.
+  const showAwardFilter = useMemo(() => hasGalleryAwards(selectedEvent?.entries ?? []), [selectedEvent]);
   const visibleEntries = useMemo(
     () => filterGalleryEntries(selectedEvent?.entries ?? [], awardFilter),
     [awardFilter, selectedEvent],
@@ -223,29 +228,31 @@ export const GalleryView: React.FC = () => {
           </div>
 
           {/* Award filter */}
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by award">
-            {filterOptions.map(option => {
-              const isSelected = awardFilter === option;
-              const count = counts[option];
-              return (
-                <button
-                  key={option}
-                  onClick={() => setAwardFilter(option)}
-                  disabled={!selectedEvent || (count === 0 && !isSelected)}
-                  aria-pressed={isSelected}
-                  className={`inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-                    isSelected
-                      ? 'bg-amber-900/50 border-amber-700 text-amber-300'
-                      : 'bg-neutral-800 border-neutral-600 text-neutral-300 hover:border-neutral-500 hover:text-white'
-                  }`}
-                >
-                  {option !== 'all' && <span className={`w-2.5 h-2.5 rounded-full ${AWARD_DOT_STYLES[option]}`} />}
-                  {option === 'all' ? 'All' : GALLERY_AWARD_LABELS[option]}
-                  <span className="text-xs text-neutral-500">{count}</span>
-                </button>
-              );
-            })}
-          </div>
+          {showAwardFilter && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by award">
+              {filterOptions.map(option => {
+                const isSelected = awardFilter === option;
+                const count = counts[option];
+                return (
+                  <button
+                    key={option}
+                    onClick={() => setAwardFilter(option)}
+                    disabled={count === 0 && !isSelected}
+                    aria-pressed={isSelected}
+                    className={`inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                      isSelected
+                        ? 'bg-amber-900/50 border-amber-700 text-amber-300'
+                        : 'bg-neutral-800 border-neutral-600 text-neutral-300 hover:border-neutral-500 hover:text-white'
+                    }`}
+                  >
+                    {option !== 'all' && <span className={`w-2.5 h-2.5 rounded-full ${AWARD_DOT_STYLES[option]}`} />}
+                    {option === 'all' ? 'All' : GALLERY_AWARD_LABELS[option]}
+                    <span className="text-xs text-neutral-500">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Entries */}
           {!selectedEvent && !error && <p className="text-neutral-400">Loading entries...</p>}
@@ -269,15 +276,17 @@ export const GalleryView: React.FC = () => {
                         src={galleryAssetUrl(entry.thumbnail.src)}
                         width={entry.thumbnail.width}
                         height={entry.thumbnail.height}
-                        alt={`Painted miniature by ${entry.name}`}
+                        alt={imageAlt(entry)}
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-3 space-y-2">
-                      <div className="text-white font-semibold">{entry.name}</div>
-                      <AwardBadges entry={entry} />
-                    </div>
+                    {(entry.name || entry.award || entry.specialAwards.length > 0) && (
+                      <div className="p-3 space-y-2">
+                        {entry.name && <div className="text-white font-semibold">{entry.name}</div>}
+                        <AwardBadges entry={entry} />
+                      </div>
+                    )}
                   </button>
                 </li>
               ))}

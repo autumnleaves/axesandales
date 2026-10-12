@@ -11,8 +11,12 @@ export const GALLERY_AWARD_LABELS: Record<GalleryAward, string> = {
   commended: 'Commended',
 };
 
+/** Alphabetical, with unnamed entries last in their original order. */
 export const sortGalleryEntries = (entries: GalleryEntry[]): GalleryEntry[] =>
-  [...entries].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }));
+  [...entries].sort((a, b) => {
+    if (a.name === null || b.name === null) return (a.name === null ? 1 : 0) - (b.name === null ? 1 : 0);
+    return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+  });
 
 /** Entries matching the award filter, in alphabetical order. */
 export const filterGalleryEntries = (entries: GalleryEntry[], filter: GalleryAwardFilter): GalleryEntry[] =>
@@ -25,5 +29,8 @@ export const countGalleryAwards = (entries: GalleryEntry[]): Record<GalleryAward
   }
   return counts;
 };
+
+/** False for events without placings (e.g. ABR), which don't get the award filter. */
+export const hasGalleryAwards = (entries: GalleryEntry[]): boolean => entries.some(entry => entry.award !== null);
 
 export const galleryAssetUrl = (src: string): string => `${import.meta.env.BASE_URL}${src}`;

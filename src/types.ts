@@ -152,7 +152,7 @@ export interface GalleryImage {
 
 export interface GalleryEntry {
   id: string;
-  name: string; // Display name: first name + last initial, e.g. "Jason B."
+  name: string | null; // Display name: first name + last initial, e.g. "Jason B."; null when unknown
   award: GalleryAward | null;
   specialAwards: string[]; // e.g. ["People's Champion"]
   image: GalleryImage;
@@ -162,14 +162,14 @@ export interface GalleryEntry {
 export interface GalleryEvent {
   id: string;
   title: string;
-  year: number;
+  date: string; // "YYYY-MM" or "YYYY-MM-DD"; not shown, used to order the tabs
   entries: GalleryEntry[];
 }
 
 export interface GalleryEventSummary {
   id: string;
   title: string;
-  year: number;
+  date: string;
   entryCount: number;
 }
 

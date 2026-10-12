@@ -317,3 +317,63 @@ export const buildEventEntries = (
   entries.sort((a, b) => a.displayName.localeCompare(b.displayName, 'en', { sensitivity: 'base' }));
   return { entries, warnings };
 };
+
+export interface PhotoOnlyEntry {
+  photoFile: string;
+  slug: string;
+  /** Null when the photo filename has no name in it, e.g. "PXL_20260816_025615099.jpg". */
+  displayName: string | null;
+  award: null;
+  specialAwards: string[];
+}
+
+export interface PhotoOnlyBuildOptions {
+  /** Special awards by photo file, e.g. { "Nigel.jpg": ["People's Choice"] }. */
+  specialAwards?: Record<string, string[]>;
+}
+
+const CAMERA_PREFIXES = new Set(['PXL', 'IMG', 'DSC', 'DSCF', 'DSCN', 'MVIMG', 'PANO', 'PHOTO', 'VID']);
+
+/**
+ * Display name from a photo named after its entrant, keeping the filename's
+ * capitalisation. Tokens containing digits and camera prefixes are ignored, so
+ * camera filenames give null.
+ * "Matt B.jpg" -> "Matt B.", "Nigel.jpg" -> "Nigel", "PXL_20260816_025615099.jpg" -> null
+ */
+export const photoDisplayName = (fileName: string): string | null => {
+  const words = fileName
+    .replace(/\.[^.]+$/, '')
+    .split(/[\s_-]+/)
+    .filter(token => token && !/\d/.test(token) && !CAMERA_PREFIXES.has(token.toUpperCase()));
+  return formatDisplayName(words.join(' ')) || null;
+};
+
+/**
+ * Gallery entries for an event with no results export: one entry per photo,
+ * named from the filename. Named entries are sorted alphabetically, followed
+ * by unnamed ones in filename order.
+ */
+export const buildPhotoOnlyEntries = (
+  photoFiles: string[],
+  options: PhotoOnlyBuildOptions = {},
+): { entries: PhotoOnlyEntry[]; warnings: string[] } => {
+  const warnings: string[] = [];
+  for (const file of Object.keys(options.specialAwards ?? {})) {
+    if (!photoFiles.includes(file)) warnings.push(`Special award for "${file}" doesn't match any photo`);
+  }
+
+  const usedSlugs = new Set<string>();
+  const entries = [...photoFiles].sort().map(photoFile => {
+    const displayName = photoDisplayName(photoFile);
+    const base = slugify(displayName ?? photoFile.replace(/\.[^.]+$/, '')) || 'photo';
+    let slug = base;
+    for (let n = 2; usedSlugs.has(slug); n++) slug = `${base}-${n}`;
+    usedSlugs.add(slug);
+    return { photoFile, slug, displayName, award: null, specialAwards: options.specialAwards?.[photoFile] ?? [] };
+  });
+
+  const named = entries.filter(entry => entry.displayName !== null);
+  const unnamed = entries.filter(entry => entry.displayName === null);
+  named.sort((a, b) => a.displayName!.localeCompare(b.displayName!, 'en', { sensitivity: 'base' }));
+  return { entries: [...named, ...unnamed], warnings };
+};

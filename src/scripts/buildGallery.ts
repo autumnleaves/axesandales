@@ -15,6 +15,11 @@
  *                            frame), resized, with metadata stripped, plus thumbnails
  *   - index.json             list of events for the gallery tabs
  *
+ * An event with "photosOnly": true has no results CSV: every photo in <photosFolder>/
+ * is shown, named after its filename ("Matt B.jpg" -> "Matt B."; camera filenames
+ * like PXL_20260816_025615099.jpg are shown without a name), with no placings.
+ * Give its entries special awards with "specialAwards": { "<photo file>": ["..."] }.
+ *
  * It also writes reports/gallery/<event id>-crops.jpg, a contact sheet showing
  * each crop on the original photo. Check it after adding an event; if a crop is
  * wrong, set "crops": { "<photo file>": <pixels from the top> } on the event.
@@ -29,15 +34,28 @@ import { dirname, extname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import type { GalleryEntry, GalleryEvent, GalleryImage, GalleryIndex } from '../types';
-import { buildEventEntries, isResultsCsv, parseResultsCsv, type EventBuildOptions } from './galleryBuild.logic';
+import {
+  buildEventEntries,
+  buildPhotoOnlyEntries,
+  isResultsCsv,
+  parseResultsCsv,
+  type EventBuildOptions,
+  type PhotoOnlyBuildOptions,
+} from './galleryBuild.logic';
 import { computeCrop, parseAspectRatio, type CropRect } from './galleryCrop.logic';
 
-interface GalleryEventConfig extends EventBuildOptions {
+interface GalleryEventConfig extends EventBuildOptions, PhotoOnlyBuildOptions {
   id: string;
   title: string;
-  year: number;
+  /** When the event was held, "YYYY-MM" or "YYYY-MM-DD". Tabs are ordered newest first. */
+  date: string;
   sourceFolder: string;
+  /** Relative to sourceFolder. Defaults to "Photos"; use "." for photos directly in sourceFolder. */
   photosFolder?: string;
+  /** No results CSV: show every photo, named from its filename, with no placings. */
+  photosOnly?: boolean;
+  /** Overrides the gallery-wide aspectRatio, e.g. "4:3" for landscape army shots. */
+  aspectRatio?: string;
   resultsFile?: string;
   /** Manual crop offsets (source pixels from the top, or left for landscape photos) by photo file. */
   crops?: Record<string, number>;
@@ -74,7 +92,6 @@ const sourceRoot = resolve(repoRoot, config.sourceDir);
 const outputRoot = resolve(repoRoot, config.outputDir);
 const publicRoot = resolve(repoRoot, 'public');
 const reportsRoot = resolve(repoRoot, 'reports/gallery');
-const aspectRatio = parseAspectRatio(config.aspectRatio);
 
 const toSitePath = (absolutePath: string) =>
   absolutePath.slice(publicRoot.length + 1).split(/[\\/]/).join('/');
@@ -95,7 +112,13 @@ const findResultsFile = (eventDir: string, event: GalleryEventConfig): string =>
 };
 
 /** Applies EXIF orientation, then works out the crop that keeps the model whole. */
-const preparePhoto = async (source: string, file: string, label: string, override?: number): Promise<PreparedPhoto> => {
+const preparePhoto = async (
+  source: string,
+  file: string,
+  label: string,
+  aspectRatio: number,
+  override?: number,
+): Promise<PreparedPhoto> => {
   const oriented = await sharp(source).rotate().toBuffer();
   const { width = 0, height = 0 } = await sharp(oriented).metadata();
   const { data, info } = await sharp(oriented)
@@ -185,12 +208,11 @@ const buildEvent = async (event: GalleryEventConfig): Promise<GalleryEvent | nul
     return null;
   }
 
-  const resultsFile = findResultsFile(eventDir, event);
   const photosDir = join(eventDir, event.photosFolder ?? 'Photos');
   const photoFiles = readdirSync(photosDir).filter(file => PHOTO_EXTENSIONS.has(extname(file).toLowerCase()));
 
-  const rows = parseResultsCsv(readFileSync(resultsFile, 'utf8'));
-  const { entries, warnings } = buildEventEntries(rows, photoFiles, event);
+  const rows = event.photosOnly ? null : parseResultsCsv(readFileSync(findResultsFile(eventDir, event), 'utf8'));
+  const { entries, warnings } = rows ? buildEventEntries(rows, photoFiles, event) : buildPhotoOnlyEntries(photoFiles, event);
   warnings.forEach(warning => console.warn(`⚠ ${event.title}: ${warning}`));
 
   const outDir = join(outputRoot, event.id);
@@ -203,11 +225,12 @@ const buildEvent = async (event: GalleryEventConfig): Promise<GalleryEvent | nul
     }
   }
 
+  const aspectRatio = parseAspectRatio(event.aspectRatio ?? config.aspectRatio);
   const galleryEntries: GalleryEntry[] = [];
   const prepared: PreparedPhoto[] = [];
   for (const entry of entries) {
     const override = event.crops?.[entry.photoFile];
-    const photo = await preparePhoto(join(photosDir, entry.photoFile), entry.photoFile, entry.displayName, override);
+    const photo = await preparePhoto(join(photosDir, entry.photoFile), entry.photoFile, entry.displayName ?? '(no name)', aspectRatio, override);
     prepared.push(photo);
     galleryEntries.push({
       id: entry.slug,
@@ -219,16 +242,16 @@ const buildEvent = async (event: GalleryEventConfig): Promise<GalleryEvent | nul
     });
     const landscape = photo.crop.left > 0;
     const cropNote = `crop ${landscape ? 'left' : 'top'} ${landscape ? photo.crop.left : photo.crop.top}px${override !== undefined ? ' (manual)' : ''}`;
-    console.log(`  ${entry.photoFile} -> ${entry.displayName} (${entry.award ?? 'no placing'}), ${cropNote}`);
+    console.log(`  ${entry.photoFile} -> ${entry.displayName ?? '(no name)'} (${entry.award ?? 'no placing'}), ${cropNote}`);
     photo.warnings.forEach(warning => console.warn(`⚠ ${event.title}: ${entry.photoFile}: ${warning}; check the crop review sheet`));
   }
   await writeContactSheet(event.id, prepared);
 
-  const galleryEvent: GalleryEvent = { id: event.id, title: event.title, year: event.year, entries: galleryEntries };
+  const galleryEvent: GalleryEvent = { id: event.id, title: event.title, date: event.date, entries: galleryEntries };
   writeFileSync(join(outDir, 'event.json'), `${JSON.stringify(galleryEvent, null, 2)}\n`, 'utf8');
 
-  const skipped = rows.length - entries.length;
-  console.log(`✓ ${event.title}: ${entries.length} entries with photos (${skipped} entrants without a photo skipped)`);
+  const skipped = rows ? ` (${rows.length - entries.length} entrants without a photo skipped)` : '';
+  console.log(`✓ ${event.title}: ${entries.length} entries with photos${skipped}`);
   return galleryEvent;
 };
 
@@ -241,10 +264,10 @@ const writeIndex = () => {
       continue;
     }
     const built = JSON.parse(readFileSync(eventFile, 'utf8')) as GalleryEvent;
-    events.push({ id: event.id, title: event.title, year: event.year, entryCount: built.entries.length });
+    events.push({ id: event.id, title: event.title, date: event.date, entryCount: built.entries.length });
   }
   // Newest event first so it's the default tab.
-  events.sort((a, b) => b.year - a.year);
+  events.sort((a, b) => b.date.localeCompare(a.date));
   writeFileSync(join(outputRoot, 'index.json'), `${JSON.stringify({ events }, null, 2)}\n`, 'utf8');
   console.log(`✓ Wrote index with ${events.length} event(s)`);
 };
@@ -253,6 +276,8 @@ const main = async () => {
   const ids = config.events.map(event => event.id);
   const duplicate = ids.find((id, index) => ids.indexOf(id) !== index);
   if (duplicate) throw new Error(`Duplicate event id "${duplicate}" in gallery.config.json`);
+  const undated = config.events.find(event => !/^\d{4}-\d{2}(-\d{2})?$/.test(event.date ?? ''));
+  if (undated) throw new Error(`${undated.title}: "date" must be "YYYY-MM" or "YYYY-MM-DD" in gallery.config.json`);
 
   mkdirSync(outputRoot, { recursive: true });
   for (const event of config.events) {

@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import type { GalleryAward, GalleryEntry } from '../types';
-import { countGalleryAwards, filterGalleryEntries, sortGalleryEntries } from '../utils/galleryHelpers';
+import { countGalleryAwards, filterGalleryEntries, hasGalleryAwards, sortGalleryEntries } from '../utils/galleryHelpers';
 
-const entry = (name: string, award: GalleryAward | null): GalleryEntry => ({
-  id: name.toLowerCase(),
+const entry = (name: string | null, award: GalleryAward | null, id = name?.toLowerCase() ?? 'unnamed'): GalleryEntry => ({
+  id,
   name,
   award,
   specialAwards: [],
@@ -25,6 +25,11 @@ describe('sortGalleryEntries', () => {
     expect(sortGalleryEntries(entries).map(e => e.name)).toEqual(['aaron M.', 'Craig R.', 'Eric V.', 'Matt B.', 'Zara Y.']);
     expect(entries).toEqual(original);
   });
+
+  it('puts unnamed entries last, in their original order', () => {
+    const mixed = [entry(null, null, 'x'), entry('Zara Y.', null), entry(null, null, 'y'), entry('Adavit', null)];
+    expect(sortGalleryEntries(mixed).map(e => e.id)).toEqual(['adavit', 'zara y.', 'x', 'y']);
+  });
 });
 
 describe('filterGalleryEntries', () => {
@@ -41,5 +46,13 @@ describe('filterGalleryEntries', () => {
 describe('countGalleryAwards', () => {
   it('counts entries per award', () => {
     expect(countGalleryAwards(entries)).toEqual({ all: 5, gold: 2, silver: 1, bronze: 0, commended: 1 });
+  });
+});
+
+describe('hasGalleryAwards', () => {
+  it('is false for events with no placings, even with special awards', () => {
+    expect(hasGalleryAwards(entries)).toBe(true);
+    expect(hasGalleryAwards([{ ...entry('Matt B.', null), specialAwards: ["People's Choice"] }, entry('Nigel', null)])).toBe(false);
+    expect(hasGalleryAwards([])).toBe(false);
   });
 });
