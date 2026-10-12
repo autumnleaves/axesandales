@@ -191,6 +191,9 @@ export const cropSize = (width: number, height: number, ratio: number) => {
   return { axis: 'vertical' as const, width, height: Math.min(height, Math.round(width / ratio)) };
 };
 
+/** Crops trimming at most this fraction of the photo are centred without analysis. */
+const NEAR_WHOLE_PHOTO = 0.01;
+
 /**
  * Crop rectangle for a photo. `analysed` is the greyscale analysis copy (any
  * scale); `override` is a manual offset in source pixels along the cropped axis.
@@ -211,6 +214,9 @@ export const computeCrop = (
   let result: CropOffsetResult;
   if (override !== undefined) {
     result = { offset: Math.min(maxOffset, Math.max(0, Math.round(override))), warnings: [] };
+  } else if (maxOffset <= length * NEAR_WHOLE_PHOTO) {
+    // The photo already has (almost) the target shape, so there's nothing to choose or warn about.
+    result = { offset: Math.round(maxOffset / 2), warnings: [] };
   } else {
     const scale = length / (vertical ? analysed.height : analysed.width);
     const detected = vertical ? detectVerticalSubject(analysed) : detectHorizontalSubject(analysed);

@@ -1,0 +1,235 @@
+{
+  "id": "abr-2026",
+  "title": "ABR 2026",
+  "date": "2026-08",
+  "entries": [
+    {
+      "id": "adavit",
+      "name": "Adavit",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/adavit.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/adavit-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "angus-t",
+      "name": "Angus T.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/angus-t.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/angus-t-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "ben-p",
+      "name": "Ben P.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/ben-p.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/ben-p-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "bryce-h",
+      "name": "Bryce H.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/bryce-h.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/bryce-h-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "jem-w",
+      "name": "Jem W.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/jem-w.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/jem-w-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "kaleb-s",
+      "name": "Kaleb S.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/kaleb-s.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/kaleb-s-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "matt-b",
+      "name": "Matt B.",
+      "award": null,
+      "specialAwards": [
+        "People's Choice"
+      ],
+      "image": {
+        "src": "gallery-data/abr-2026/matt-b.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/matt-b-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "mitchell-b",
+      "name": "Mitchell B.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/mitchell-b.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/mitchell-b-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "nathan-l",
+      "name": "Nathan L.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/nathan-l.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/nathan-l-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "nigel",
+      "name": "Nigel",
+      "award": null,
+      "specialAwards": [
+        "People's Choice"
+      ],
+      "image": {
+        "src": "gallery-data/abr-2026/nigel.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/nigel-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "sam-c",
+      "name": "Sam C.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/sam-c.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/sam-c-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "scott-v",
+      "name": "Scott V.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/scott-v.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/scott-v-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "simon-l",
+      "name": "Simon L.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/simon-l.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/simon-l-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    },
+    {
+      "id": "tom-c",
+      "name": "Tom C.",
+      "award": null,
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/abr-2026/tom-c.jpg",
+        "width": 1600,
+        "height": 1200
+      },
+      "thumbnail": {
+        "src": "gallery-data/abr-2026/tom-c-thumb.jpg",
+        "width": 720,
+        "height": 540
+      }
+    }
+  ]
+}

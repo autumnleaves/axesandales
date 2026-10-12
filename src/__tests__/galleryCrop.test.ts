@@ -144,6 +144,12 @@ describe('computeCrop', () => {
     expect(rect.left + rect.width).toBeGreaterThanOrEqual(171);
   });
 
+  it('centres the crop without warnings when the photo almost has the target shape', () => {
+    const image = blankImage(408, 307);
+    paint(image, 0, 408, 0, 307, (x, y) => ((x + y) % 2 ? 0 : 250));
+    expect(computeCrop(408, 307, 4 / 3, image)).toMatchObject({ rect: { left: 0, top: 1, width: 408, height: 306 }, warnings: [] });
+  });
+
   it('uses a manual offset when given, clamped to the photo', () => {
     expect(computeCrop(100, 200, 0.8, competitionPhoto(), 10).rect.top).toBe(10);
     expect(computeCrop(100, 200, 0.8, competitionPhoto(), 999).rect.top).toBe(75);

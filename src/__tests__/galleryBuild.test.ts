@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   buildEventEntries,
+  buildPhotoOnlyEntries,
   findEntrantForPhoto,
   formatDisplayName,
   isResultsCsv,
@@ -8,6 +9,7 @@ import {
   parsePlacing,
   parseResultsCsv,
   parseSpecialAwards,
+  photoDisplayName,
   photoNameTokens,
   slugify,
   type ResultRow,
@@ -209,5 +211,41 @@ describe('buildEventEntries', () => {
     expect(() => buildEventEntries([row('1', 'Zara Young', 'PLATINUM')], [])).toThrow(/Unknown placing/);
     expect(() => buildEventEntries([row('', 'Zara Young', 'GOLD')], [])).toThrow(/ENTRY ID/);
     expect(() => buildEventEntries([row('1', 'Zara Young'), row('1', 'Andrew Curtis')], [])).toThrow(/duplicate ENTRY ID/);
+  });
+});
+
+describe('photoDisplayName', () => {
+  it('names the entry from the filename, keeping its capitalisation', () => {
+    expect(photoDisplayName('Matt B.jpg')).toBe('Matt B.');
+    expect(photoDisplayName('Nigel.jpg')).toBe('Nigel');
+    expect(photoDisplayName('Mitchell_Bxx_02.jpeg')).toBe('Mitchell B.');
+  });
+
+  it('returns null for camera filenames', () => {
+    expect(photoDisplayName('PXL_20260816_025615099.jpg')).toBeNull();
+    expect(photoDisplayName('IMG_1234.JPG')).toBeNull();
+    expect(photoDisplayName('DSC-0042.jpeg')).toBeNull();
+  });
+});
+
+describe('buildPhotoOnlyEntries', () => {
+  it('includes every photo, named entries alphabetically then unnamed ones, with no placings', () => {
+    const { entries } = buildPhotoOnlyEntries(['Tom C.jpg', 'PXL_2.jpg', 'adavit.jpg', 'PXL_1.jpg', 'Matt B.jpg']);
+    expect(entries.map(e => e.displayName)).toEqual(['adavit', 'Matt B.', 'Tom C.', null, null]);
+    expect(entries.map(e => e.slug)).toEqual(['adavit', 'matt-b', 'tom-c', 'pxl-1', 'pxl-2']);
+    expect(entries.every(e => e.award === null)).toBe(true);
+  });
+
+  it('applies special awards by photo file and warns about unknown files', () => {
+    const { entries, warnings } = buildPhotoOnlyEntries(['Matt B.jpg', 'Nigel.jpg', 'Sam C.jpg'], {
+      specialAwards: { 'Matt B.jpg': ["People's Choice"], 'Nigel.jpg': ["People's Choice"], 'Nobody.jpg': ['Best'] },
+    });
+    expect(entries.map(e => e.specialAwards)).toEqual([["People's Choice"], ["People's Choice"], []]);
+    expect(warnings).toEqual([`Special award for "Nobody.jpg" doesn't match any photo`]);
+  });
+
+  it('gives duplicate names distinct slugs', () => {
+    const { entries } = buildPhotoOnlyEntries(['Sam C.jpg', 'Sam C_02.jpg', 'Sam_C.png']);
+    expect(entries.map(e => e.slug)).toEqual(['sam-c', 'sam-c-2', 'sam-c-3']);
   });
 });

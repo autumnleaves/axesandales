@@ -84,11 +84,18 @@ To add an event (e.g. Golden Axe 2027):
    `docs/Golden Axe 2027/`, and one photo per entrant in `docs/Golden Axe 2027/Photos/`.
    Name photos after the entrant, e.g. `GA2027_Jason.jpg` or `GA2027_Michael_McK.jpg`. Tokens with digits
    (`GA2027`, `02`) are ignored, and the rest is matched against the entrant's first name and surname.
-2. Add the event to `gallery.config.json`. Optional keys: `displayNames` (override the
+2. Add the event to `gallery.config.json` with a `date` (`"2027-11"` or `"2027-11-14"`; not shown, but tabs are
+   ordered newest first, so the most recent event is the default). Optional keys: `displayNames` (override the
    "First L." name by entry ID), `photos` (assign a photo filename to an entry ID when it can't be
    matched by name), `resultsFile` (if there's more than one results CSV in the folder) and `crops`
    (override a photo's crop: `{ "GA2027_Jason.jpg": 120 }` starts the crop 120px from the top of the original).
 3. Run `npm run gallery:build`, check the crop review sheet, then commit `gallery.config.json` and `public/gallery-data/`.
+
+For an event without placings (e.g. ABR 2026), set `"photosOnly": true` instead of providing a results CSV.
+Every photo in the photos folder is shown, named after its filename (`Matt B.jpg` → "Matt B."; camera
+filenames like `PXL_20260816_025615099.jpg` get no name), and the award filter is hidden for that event.
+`"specialAwards": { "Matt B.jpg": ["People's Choice"] }` adds badges, `"photosFolder": "."` reads photos
+straight from the event folder, and `"aspectRatio": "4:3"` overrides the crop shape (useful for landscape army shots).
 
 The build fails loudly if a photo matches no entrant, more than one entrant, or someone marked `DNE`.
 Events whose source folder isn't present locally are skipped and their existing output is kept.
