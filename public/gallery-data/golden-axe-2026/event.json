@@ -36,6 +36,22 @@
       }
     },
     {
+      "id": "amelia",
+      "name": "Amelia",
+      "award": "bronze",
+      "specialAwards": [],
+      "image": {
+        "src": "gallery-data/golden-axe-2026/amelia.jpg",
+        "width": 1280,
+        "height": 1600
+      },
+      "thumbnail": {
+        "src": "gallery-data/golden-axe-2026/amelia-thumb.jpg",
+        "width": 576,
+        "height": 720
+      }
+    },
+    {
       "id": "andrew-c",
       "name": "Andrew C.",
       "award": "silver",
@@ -257,22 +273,6 @@
       },
       "thumbnail": {
         "src": "gallery-data/golden-axe-2026/mitch-b-thumb.jpg",
-        "width": 576,
-        "height": 720
-      }
-    },
-    {
-      "id": "phillip-e",
-      "name": "Phillip E.",
-      "award": "bronze",
-      "specialAwards": [],
-      "image": {
-        "src": "gallery-data/golden-axe-2026/phillip-e.jpg",
-        "width": 1280,
-        "height": 1600
-      },
-      "thumbnail": {
-        "src": "gallery-data/golden-axe-2026/phillip-e-thumb.jpg",
         "width": 576,
         "height": 720
       }
