@@ -41,36 +41,22 @@ export const AboutView: React.FC = () => {
         </p>
       </div>
 
-      <LocationView />
-
-      {/* Terrain image */}
-      <div className="rounded-xl overflow-hidden border border-neutral-700 shadow-xl">
-        <img
-          src={`${import.meta.env.BASE_URL}images/aa-quality-terrain.jpg`}
-          alt="Quality terrain at Axes & Ales"
-          className="w-full h-auto object-cover"
-        />
-      </div>
-
-      {/* Our Community */}
+      {/* Inclusivity */}
       <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700 shadow-xl space-y-4">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <span className="w-2 h-8 bg-amber-600 rounded-full inline-block"></span>
-          Our Community
+          We're Inclusive and Welcoming
         </h2>
         <p className="text-neutral-300 leading-relaxed">
-          Axes & Ales is a <span className="text-white font-medium">registered not-for-profit incorporated association</span> — the Northern Suburbs Gamers Club Inc. We're run entirely by volunteers and nobody makes a cent from the club.
+          Axes & Ales welcomes all gamers, and we strive to create a safe and inclusive environment.
         </p>
         <p className="text-neutral-300 leading-relaxed">
-          Every dollar that comes in goes straight back into the club — whether that's new terrain, gaming mats, venue costs, or community events. Our volunteer committee keeps things running in their spare time purely for the love of the hobby.
-        </p>
-        <p className="text-neutral-300 leading-relaxed">
-          <span className="text-white font-medium">Everyone is welcome to come along and play for free</span> — no membership required, no pressure. Just turn up on a Tuesday night and join in. Memberships exist simply to help cover our running costs, maintain our terrain and tables, and to help support running events.
-        </p>
-        <p className="text-neutral-300 leading-relaxed">
-          Members get the perk of being able to book tables in advance. But if you just want to turn up and play, that's completely fine too! If you're new, our committee and regulars are always happy to have a chat, introduce you to the club, and help you find a game.
+          The club is a place for everyone to enjoy the hobby, 
+          regardless of race, gender, sexuality, or neurotype, 
+          and we are a place for both experienced players and those who are just starting out.           
         </p>
       </div>
+
       {/* Co-ordinate a Game */}
       <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700 shadow-xl space-y-4">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -105,6 +91,37 @@ export const AboutView: React.FC = () => {
           </a>
         </div>
       </div>
+
+      <LocationView />
+
+      {/* Terrain image */}
+      <div className="rounded-xl overflow-hidden border border-neutral-700 shadow-xl">
+        <img
+          src={`${import.meta.env.BASE_URL}images/aa-quality-terrain.jpg`}
+          alt="Quality terrain at Axes & Ales"
+          className="w-full h-auto object-cover"
+        />
+      </div>
+
+      {/* Our Community */}
+      <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700 shadow-xl space-y-4">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <span className="w-2 h-8 bg-amber-600 rounded-full inline-block"></span>
+          Our Community
+        </h2>
+        <p className="text-neutral-300 leading-relaxed">
+          Axes & Ales is a <span className="text-white font-medium">registered not-for-profit incorporated association</span> — the Northern Suburbs Gamers Club Inc. We're run entirely by volunteers and nobody makes a cent from the club.
+        </p>
+        <p className="text-neutral-300 leading-relaxed">
+          Every dollar that comes in goes straight back into the club — whether that's new terrain, gaming mats, venue costs, or community events. Our volunteer committee keeps things running in their spare time purely for the love of the hobby.
+        </p>
+        <p className="text-neutral-300 leading-relaxed">
+          <span className="text-white font-medium">Everyone is welcome to come along and play for free</span> — no membership required, no pressure. Just turn up on a Tuesday night and join in. Memberships exist simply to help cover our running costs, maintain our terrain and tables, and to help support running events.
+        </p>
+        <p className="text-neutral-300 leading-relaxed">
+          Members get the perk of being able to book tables in advance. But if you just want to turn up and play, that's completely fine too! If you're new, our committee and regulars are always happy to have a chat, introduce you to the club, and help you find a game.
+        </p>
+      </div>      
       {/* The Committee */}
       <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700 shadow-xl space-y-4">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -121,18 +138,17 @@ export const AboutView: React.FC = () => {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
           {[
-            { name: 'Glyn', role: 'President' },
-            { name: 'Daniel', role: 'Vice President' },
+            { name: 'Tom', role: 'President' },
+            { name: 'Glyn', role: 'Vice President' },
             { name: 'Jason/Dutch Law', role: 'Treasurer' },
             { name: 'Tyrone', role: 'Secretary' },
+            { name: 'Daniel', role: 'Club Photographer' },
             { name: 'Jason/GCUGreyArea', role: 'General Committee' },
-            { name: 'Scoob', role: 'General Committee' },
             { name: 'Stew', role: 'General Committee' },
             { name: 'Rob/Fodzilla', role: 'General Committee' },
-            { name: 'Rob D', role: 'General Committee' },
             { name: 'Enrique/Soulstress', role: 'General Committee' },
             { name: 'Adam', role: 'General Committee' },
-            { name: 'Tom', role: 'IT Guy' },
+            { name: "Tim", role: "General Committee" },
             
           ].map((member) => (
             <div key={member.name} className="bg-neutral-900/50 rounded-lg p-3 border border-neutral-700 text-center">

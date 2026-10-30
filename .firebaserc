@@ -3,11 +3,5 @@
     "default": "axes-and-ales-booking-site"
   },
   "targets": {},
-  "etags": {
-    "axes-and-ales-booking-site": {
-      "extensionInstances": {
-        "firestore-send-email": "b5f21ed839813eba662ea61bca517ea67222c330f70004bdcc613c06079d00c9"
-      }
-    }
-  }
+  "etags": {}
 }

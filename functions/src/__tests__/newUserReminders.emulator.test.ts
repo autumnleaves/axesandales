@@ -1,6 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {getDb} from "../adminApp";
 import {sendNewUserReminders} from "../newUserReminders.logic";
+import {MAIL_COLLECTION} from "../mail";
 
 const daysAgo = (days: number): Date =>
   new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -40,8 +41,8 @@ describe("sendNewUserReminders (Firestore emulator)", () => {
       const result = await sendNewUserReminders(db);
       expect(result).toEqual({sent: 1, skipped: 1});
 
-      const mailSnap = await db.collection("mail").get();
-      const recipients = mailSnap.docs.map((doc) => doc.data().to[0]);
+      const mailSnap = await db.collection(MAIL_COLLECTION).get();
+      const recipients = mailSnap.docs.map((doc) => doc.data().to);
       expect(recipients).toEqual(["in-window@example.com"]);
 
       const remindedUser = await db.collection("users")

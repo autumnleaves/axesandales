@@ -131,7 +131,7 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    match /mail/{document} {
+    match /outbox/{document} {
       allow read, write: if false;  // Only Cloud Functions can write
     }
   }

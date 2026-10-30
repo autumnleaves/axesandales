@@ -11,6 +11,7 @@ import { ClubLayoutView } from './components/ClubLayoutView';
 import { WelcomeView } from './components/WelcomeView';
 import { EventsView } from './components/EventsView';
 import { SwapMeetView } from './components/SwapMeetView';
+import { GalleryView } from './components/GalleryView';
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import * as firebaseService from './services/firebaseService';
@@ -19,7 +20,7 @@ import { sanitizeBookingGameSystem, shouldAutoAddGameSystem } from './utils/book
 import { resolveSelectedBookingDate } from './utils/bookingDateSelection';
 import { AdminAuditEntry, Booking, User, Table, TerrainBox, ClubEvent, SwapMeet, SwapMeetBooking } from './types';
 
-type PageKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet';
+type PageKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet' | 'gallery';
 
 const DEV_USER: User = {
   id: 'dev-local',
@@ -47,6 +48,7 @@ const PATH_TO_PAGE: Record<string, PageKey> = {
   '/welcome': 'welcome',
   '/events': 'events',
   '/swap-meet': 'swapMeet',
+  '/gallery': 'gallery',
 };
 
 const PAGE_TO_PATH: Record<PageKey, string> = {
@@ -60,17 +62,22 @@ const PAGE_TO_PATH: Record<PageKey, string> = {
   welcome: '/welcome',
   events: '/events',
   swapMeet: '/swap-meet',
+  gallery: '/gallery',
 };
 
+// Trailing slashes are stripped so "/gallery/" (e.g. from a cached redirect) still resolves.
+const getPathFromUrl = (): string =>
+  window.location.pathname.replace(BASE_PATH, '').replace(/\/+$/, '') || '/';
+
 const getPageFromUrl = (): PageKey => {
-  const path = window.location.pathname.replace(BASE_PATH, '') || '/';
+  const path = getPathFromUrl();
   return PATH_TO_PAGE[path] || 'about';
 };
 
 const DATE_QUERY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 const getBookingDateFromUrl = (): string | null => {
-  const path = window.location.pathname.replace(BASE_PATH, '') || '/';
+  const path = getPathFromUrl();
   if (PATH_TO_PAGE[path] !== 'home') return null;
 
   const date = new URLSearchParams(window.location.search).get('date');
@@ -387,6 +394,7 @@ return (
 {currentPage === 'membership' && <MembershipView />}
 {currentPage === 'layout' && <ClubLayoutView />}
 {currentPage === 'stats' && <StatsView currentUser={user || (isDev ? DEV_USER : null)} showToast={showToast} />}
+{currentPage === 'gallery' && <GalleryView />}
 {currentPage === 'events' && <EventsView events={events} user={user} eventTags={eventTags} nextClubDate={bookableDates[0] || null} />}
 {currentPage === 'swapMeet' && showSwapMeetTab && (
   <SwapMeetView

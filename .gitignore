@@ -25,7 +25,9 @@ dist-ssr
 
 # AI planning
 .ai/
-docs/
+docs/*
+# ...but keep README images
+!docs/img/
 
 # Local secrets (env files with actual values)
 .env.local

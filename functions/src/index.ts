@@ -20,11 +20,35 @@ import {
   formatDate,
   SwapMeetBookingData,
 } from "./emailTemplates";
+import {createMailTrigger, queueEmail} from "./mail";
 
 initializeApp();
 const db = getFirestore();
 
 setGlobalOptions({maxInstances: 10});
+
+// =====================================================
+// EMAIL DELIVERY
+// =====================================================
+
+const COMMITTEE_EMAIL = "axesandalescommittee@gmail.com";
+
+/**
+ * Sends each email queued in the outbox collection via Resend SMTP.
+ */
+export const sendQueuedEmail = createMailTrigger({
+  region: "australia-southeast2",
+  sender: {
+    from: "committee@axesandales.club",
+    replyTo: COMMITTEE_EMAIL,
+  },
+  smtp: {
+    host: "smtp.resend.com",
+    port: 465,
+    user: "resend",
+    passwordSecret: "SMTP_PASSWORD",
+  },
+});
 
 // =====================================================
 // BOOKING CONFIRMATION EMAILS
@@ -95,27 +119,6 @@ async function getSecondaryTerrainName(
 }
 
 /**
- * Queue an email via the mail collection.
- * @param {string} to - Recipient email address.
- * @param {string} subject - Email subject line.
- * @param {string} html - HTML email body.
- * @return {Promise<void>} Resolves when queued.
- */
-async function queueEmail(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
-  await db.collection("mail").add({
-    to: [to],
-    message: {
-      subject,
-      html,
-    },
-  });
-}
-
-/**
  * Triggered when a new booking is created.
  * Sends a confirmation email to the member.
  */
@@ -145,7 +148,7 @@ export const onBookingCreated = onDocumentCreated(
     );
     const subject =
       `Booking Confirmed - ${formatDate(booking.date)}`;
-    await queueEmail(email, subject, html);
+    await queueEmail(db, {to: email, subject, html});
 
     const id = event.params.bookingId;
     logger.info(
@@ -192,7 +195,7 @@ export const onBookingUpdated = onDocumentUpdated(
       );
       const subject =
         `Booking Cancelled - ${formatDate(after.date)}`;
-      await queueEmail(email, subject, html);
+      await queueEmail(db, {to: email, subject, html});
       logger.info(
         `Cancellation email queued for ${email} (${id})`,
       );
@@ -218,7 +221,7 @@ export const onBookingUpdated = onDocumentUpdated(
       );
       const subject =
         `Booking Updated - ${formatDate(after.date)}`;
-      await queueEmail(email, subject, html);
+      await queueEmail(db, {to: email, subject, html});
       logger.info(
         `Modification email queued for ${email} (${id})`,
       );
@@ -295,7 +298,7 @@ export const onMembershipAuditCreated = onDocumentCreated(
       "Welcome to Axes & Ales: Membership Activated!" :
       "Axes & Ales: Membership Renewed!";
 
-    await queueEmail(email, subject, html);
+    await queueEmail(db, {to: email, subject, html});
 
     const id = event.params.entryId;
     logger.info(
@@ -308,8 +311,6 @@ export const onMembershipAuditCreated = onDocumentCreated(
 // =====================================================
 // SWAP MEET EMAILS
 // =====================================================
-
-const COMMITTEE_EMAIL = "axesandalescommittee@gmail.com";
 
 /**
  * Triggered when a swap meet booking is created.
@@ -336,7 +337,7 @@ export const onSwapMeetBookingCreated = onDocumentCreated(
     const html = booking.paid ?
       buildSwapMeetConfirmedEmail(booking) :
       buildSwapMeetBookingEmail(booking);
-    await queueEmail(email, subject, html);
+    await queueEmail(db, {to: email, subject, html});
     logger.info(
       `Swap meet booking email queued for ${email}`,
     );
@@ -368,16 +369,16 @@ export const onSwapMeetBookingUpdated = onDocumentUpdated(
       before.status !== "cancelled" &&
       after.status === "cancelled"
     ) {
-      await queueEmail(
-        email,
-        "Swap Meet Booking Cancelled",
-        buildSwapMeetCancelledEmail(after),
-      );
-      await queueEmail(
-        COMMITTEE_EMAIL,
-        `Swap Meet Booking Cancelled - ${after.userName}`,
-        buildSwapMeetCommitteeCancelledEmail(after, email),
-      );
+      await queueEmail(db, {
+        to: email,
+        subject: "Swap Meet Booking Cancelled",
+        html: buildSwapMeetCancelledEmail(after),
+      });
+      await queueEmail(db, {
+        to: COMMITTEE_EMAIL,
+        subject: `Swap Meet Booking Cancelled - ${after.userName}`,
+        html: buildSwapMeetCommitteeCancelledEmail(after, email),
+      });
       logger.info(
         `Swap meet cancellation emails queued for ${email}`,
       );
@@ -385,11 +386,11 @@ export const onSwapMeetBookingUpdated = onDocumentUpdated(
     }
 
     if (!before.paid && after.paid) {
-      await queueEmail(
-        email,
-        "Swap Meet Booking Confirmed",
-        buildSwapMeetConfirmedEmail(after),
-      );
+      await queueEmail(db, {
+        to: email,
+        subject: "Swap Meet Booking Confirmed",
+        html: buildSwapMeetConfirmedEmail(after),
+      });
       logger.info(
         `Swap meet confirmation email queued for ${email}`,
       );

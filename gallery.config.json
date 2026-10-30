@@ -1,0 +1,32 @@
+{
+  "sourceDir": "docs",
+  "outputDir": "public/gallery-data",
+  "aspectRatio": "4:5",
+  "events": [
+    {
+      "id": "abr-2026",
+      "title": "ABR 2026",
+      "date": "2026-08",
+      "sourceFolder": "ABR 2026",
+      "photosFolder": ".",
+      "photosOnly": true,
+      "aspectRatio": "4:3",
+      "specialAwards": {
+        "Matt B.jpg": ["People's Choice"],
+        "Nigel.jpg": ["People's Choice"]
+      }
+    },
+    {
+      "id": "golden-axe-2026",
+      "title": "Golden Axe 2026",
+      "date": "2026-11",
+      "sourceFolder": "Golden Axe 2026",
+      "photosFolder": "Photos",
+      "displayNames": {
+        "5": "Ben I.",
+        "6": "Ben R.",
+        "17": "Matt M."
+      }
+    }
+  ]
+}

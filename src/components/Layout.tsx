@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-type NavKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet';
+type NavKey = 'home' | 'about' | 'membership' | 'layout' | 'stats' | 'profile' | 'admin' | 'welcome' | 'events' | 'swapMeet' | 'gallery';
 
 export interface LayoutProps {
   user: { id: string; name: string; isMember: boolean; isAdmin?: boolean } | null;
@@ -63,7 +63,7 @@ export const Layout: React.FC<LayoutProps> = ({
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <img src={`${import.meta.env.BASE_URL}images/A&A_Pride.svg`} alt="Axes & Ales" className="h-8 w-8" />
+            <img src={`${import.meta.env.BASE_URL}images/logo.svg`} alt="Axes & Ales" className="h-8 w-8" />
             <span className="font-extrabold tracking-wide">Axes & Ales</span>
           </div>
 
@@ -73,6 +73,7 @@ export const Layout: React.FC<LayoutProps> = ({
             <NavLink to="home">Book a Table</NavLink>
             {showSwapMeetTab && <NavLink to="swapMeet">Swap Meet</NavLink>}
             <NavLink to="events">Events</NavLink>
+            <NavLink to="gallery">Gallery</NavLink>
             <NavLink to="membership">Membership</NavLink>
             <NavLink to="layout">Club Layout</NavLink>
             <NavLink to="stats">Stats</NavLink>
@@ -142,6 +143,7 @@ export const Layout: React.FC<LayoutProps> = ({
             <NavLink to="home">Book a Table</NavLink>
             {showSwapMeetTab && <NavLink to="swapMeet">Swap Meet</NavLink>}
             <NavLink to="events">Events</NavLink>
+            <NavLink to="gallery">Gallery</NavLink>
             <NavLink to="membership">Membership</NavLink>
             <NavLink to="layout">Club Layout</NavLink>
             <NavLink to="stats">Stats</NavLink>

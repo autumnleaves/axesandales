@@ -8,30 +8,11 @@
 import type {Firestore} from "firebase-admin/firestore";
 import {FieldValue} from "firebase-admin/firestore";
 import {buildUnpaidReminderEmail} from "./emailTemplates";
+import {queueEmail} from "./mail";
 
 export interface UnpaidRemindersResult {
   sent: number;
   skipped: number;
-}
-
-/**
- * Queue an email via the mail collection.
- * @param {Firestore} db - Firestore instance.
- * @param {string} to - Recipient email address.
- * @param {string} subject - Email subject line.
- * @param {string} html - HTML email body.
- * @return {Promise<void>} Resolves when queued.
- */
-async function queueEmail(
-  db: Firestore,
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
-  await db.collection("mail").add({
-    to: [to],
-    message: {subject, html},
-  });
 }
 
 /**
@@ -92,7 +73,7 @@ export async function sendUnpaidReminders(
     const subject =
       "Axes & Ales — Membership Reminder";
     const html = buildUnpaidReminderEmail(name);
-    await queueEmail(db, email, subject, html);
+    await queueEmail(db, {to: email, subject, html});
 
     // Track when this reminder was last sent
     await db.collection("users").doc(doc.id).update({
