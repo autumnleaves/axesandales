@@ -50,12 +50,21 @@ interface TransactionSearchPage {
   total_pages?: number;
 }
 
+const TRANSACTION_SEARCH_SCOPE =
+  "https://uri.paypal.com/services/reporting/search/read";
+
+interface AccessToken {
+  access_token: string;
+  scope?: string;
+  expires_in?: number;
+}
+
 /**
  * Exchange the app's client credentials for an OAuth access token.
  * @param {PayPalConfig} config - PayPal app credentials.
- * @return {Promise<string>} Bearer access token.
+ * @return {Promise<AccessToken>} Bearer access token and its scopes.
  */
-async function getAccessToken(config: PayPalConfig): Promise<string> {
+async function getAccessToken(config: PayPalConfig): Promise<AccessToken> {
   const base = config.apiBase ?? PAYPAL_LIVE_API;
   const auth = Buffer
     .from(`${config.clientId}:${config.clientSecret}`)
@@ -73,8 +82,26 @@ async function getAccessToken(config: PayPalConfig): Promise<string> {
       `PayPal token request failed: ${res.status} ${await res.text()}`,
     );
   }
-  const body = await res.json() as {access_token: string};
-  return body.access_token;
+  return await res.json() as AccessToken;
+}
+
+/**
+ * Explain a 403 from Transaction Search using the token's scopes.
+ * @param {AccessToken} token - The token that was rejected.
+ * @return {string} A hint for the error message.
+ */
+function explainForbidden(token: AccessToken): string {
+  if (token.scope?.split(" ").includes(TRANSACTION_SEARCH_SCOPE)) {
+    return "The access token has the Transaction Search scope, so check " +
+      "the PayPal account itself is a Business account with Transaction " +
+      "Search available.";
+  }
+  const hours = token.expires_in ? Math.ceil(token.expires_in / 3600) : 9;
+  return "The access token doesn't have the Transaction Search scope. " +
+    "Check \"Transaction search\" is ticked on the Live (not Sandbox) " +
+    "app. If it was only just ticked, PayPal keeps handing out the old " +
+    "token until it expires, so try again in about " +
+    `${hours} hour${hours === 1 ? "" : "s"}.`;
 }
 
 /**
@@ -118,12 +145,13 @@ export async function fetchPayPalTransactions(
       });
       const res = await fetch(
         `${base}/v1/reporting/transactions?${params}`,
-        {headers: {Authorization: `Bearer ${token}`}},
+        {headers: {Authorization: `Bearer ${token.access_token}`}},
       );
       if (!res.ok) {
+        const hint = res.status === 403 ? `\n${explainForbidden(token)}` : "";
         throw new Error(
           `PayPal transaction search failed: ${res.status} ` +
-          await res.text(),
+          await res.text() + hint,
         );
       }
       const body = await res.json() as TransactionSearchPage;
