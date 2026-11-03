@@ -397,3 +397,103 @@ export function buildUnpaidReminderEmail(
     <p>— The Axes &amp; Ales Committee</p>
   `;
 }
+
+// =====================================================
+// PayPal membership sync (used by paypalMembershipSync)
+// =====================================================
+
+export interface PayPalPaymentSummary {
+  transactionId: string;
+  paymentDate: string;
+  amount: string;
+  payerName: string;
+  payerEmail: string;
+  note: string;
+}
+
+export interface PayPalReviewItem extends PayPalPaymentSummary {
+  reason: string;
+  accountEmail?: string;
+}
+
+export interface PayPalAppliedItem extends PayPalPaymentSummary {
+  accountEmail: string;
+  action: "activated" | "renewed";
+  newExpiryDate: string;
+}
+
+/**
+ * Escape text for HTML. PayPal payment notes are written by payers.
+ * @param {string} text - Untrusted text.
+ * @return {string} HTML-safe text.
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
+ * Build HTML email asking the committee to check PayPal payments that
+ * couldn't be matched to a membership automatically.
+ * @param {PayPalReviewItem[]} items - Payments needing a manual check.
+ * @param {PayPalAppliedItem[]} applied - Payments applied automatically
+ *   in the same run, for reference.
+ * @return {string} HTML email body.
+ */
+export function buildPayPalManualReviewEmail(
+  items: PayPalReviewItem[],
+  applied: PayPalAppliedItem[],
+): string {
+  const cell = "style=\"border:1px solid #ccc;padding:4px 8px;" +
+    "vertical-align:top\"";
+  const reviewRows = items.map((item) => {
+    const account = item.accountEmail ?
+      `<br>Account: ${escapeHtml(item.accountEmail)}` : "";
+    return `
+      <tr>
+        <td ${cell}>${formatShortDate(item.paymentDate)}</td>
+        <td ${cell}>${escapeHtml(item.amount)}</td>
+        <td ${cell}>${escapeHtml(item.payerName || "—")}<br>
+          ${escapeHtml(item.payerEmail || "—")}</td>
+        <td ${cell}>${escapeHtml(item.note || "—")}</td>
+        <td ${cell}>${escapeHtml(item.reason)}${account}</td>
+        <td ${cell}>${escapeHtml(item.transactionId)}</td>
+      </tr>`;
+  }).join("");
+
+  const appliedList = applied.length === 0 ? "" : `
+    <p>For reference, these payments were applied automatically in the
+    same run:</p>
+    <ul>${applied.map((item) => `
+      <li>${escapeHtml(item.accountEmail)} — ${item.action} until
+      ${formatShortDate(item.newExpiryDate)}
+      (${escapeHtml(item.transactionId)})</li>`).join("")}
+    </ul>`;
+
+  return `
+    <p>Hi committee,</p>
+    <p>The PayPal membership sync couldn't automatically match
+    ${items.length === 1 ? "this payment" : "these payments"} to a
+    membership. Please check ${items.length === 1 ? "it" : "them"} and
+    activate or renew the right account from the
+    <a href="https://www.axesandales.club/admin">admin page</a>.</p>
+    <table style="border-collapse:collapse">
+      <tr>
+        <th ${cell}>Date</th>
+        <th ${cell}>Amount</th>
+        <th ${cell}>Payer</th>
+        <th ${cell}>Note</th>
+        <th ${cell}>Why it needs checking</th>
+        <th ${cell}>PayPal transaction</th>
+      </tr>${reviewRows}
+    </table>
+    ${appliedList}
+    <p>You'll only be emailed about each payment once. If the payer
+    creates their account within a couple of weeks, the sync will pick the
+    payment up automatically.</p>
+  `;
+}

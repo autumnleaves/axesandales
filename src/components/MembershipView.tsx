@@ -52,7 +52,9 @@ export const MembershipView: React.FC = () => {
             <span className="font-medium text-white">Make your payment</span> using the PayPal button below. When paying, <span className="text-amber-400 font-medium">include the email address you signed up with</span> so we can match your payment to your account.
           </li>
           <li>
-            Once payment is confirmed, the committee will activate your membership.
+            <span className="font-medium text-white">Allow up to 24 hours</span> for your membership to be applied to your account. If it still hasn't been applied after that, email the committee at{' '}
+            <a href="mailto:axesandalescommittee@gmail.com" className="text-amber-400 hover:text-amber-300 underline font-medium">axesandalescommittee@gmail.com</a>{' '}
+            and we'll sort it out.
           </li>
         </ol>
       </div>
