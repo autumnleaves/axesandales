@@ -1,4 +1,4 @@
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi} from "vitest";
 import {getDb} from "../adminApp";
 import {
   COMMITTEE_EMAIL,
@@ -135,7 +135,7 @@ describe("syncPayPalMemberships (Firestore emulator)", () => {
     await sync([txn]);
     const second = await sync([txn]);
 
-    expect(second.applied).toBe(0);
+    expect(second).toMatchObject({applied: 0, previouslyProcessed: 1});
     expect(await auditEntries()).toHaveLength(1);
   });
 
@@ -255,6 +255,29 @@ describe("syncPayPalMemberships (Firestore emulator)", () => {
 
       expect(result).toMatchObject({applied: 0, manualReview: 1});
     });
+
+  it("never writes names or emails to the (public) run log", async () => {
+    const db = getDb();
+    await db.collection("users").doc("u1").set({
+      email: "member@example.com", name: "Member One", isMember: false,
+    });
+    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
+    try {
+      await sync([
+        payment({payerEmail: "member@example.com"}),
+        payment({payerEmail: "stranger@paypal.example",
+          note: "for nobody@example.com"}),
+        payment({payerEmail: "member@example.com", amount: "20.00"}),
+      ]);
+      const output = log.mock.calls.flat().join("\n");
+      expect(output).toContain("activated user u1");
+      expect(output).toContain("ignored, not the membership fee");
+      expect(output).not.toContain("@");
+      expect(output).not.toContain("Pat Payer");
+    } finally {
+      log.mockRestore();
+    }
+  });
 
   it("ignores non-membership transactions", async () => {
     const db = getDb();

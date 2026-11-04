@@ -52,6 +52,7 @@ export interface PayPalSyncOptions {
 export interface PayPalSyncResult {
   applied: number;
   alreadyApplied: number;
+  previouslyProcessed: number;
   manualReview: number;
   ignored: number;
   committeeNotified: boolean;
@@ -154,26 +155,58 @@ function paymentText(txn: PayPalTransaction): string {
 }
 
 /**
- * Whether a transaction is an incoming, completed membership-fee payment.
+ * Why a transaction isn't an incoming, completed membership-fee payment.
  * @param {PayPalTransaction} txn - PayPal transaction.
  * @param {number} fee - Membership fee.
  * @param {string} currency - Expected currency code.
- * @return {boolean} True if it should be treated as a membership payment.
+ * @return {string | undefined} The reason it's ignored, or undefined if it
+ *   should be treated as a membership payment.
  */
-export function isMembershipPayment(
+export function notMembershipPaymentReason(
   txn: PayPalTransaction,
   fee: number,
   currency: string,
-): boolean {
+): string | undefined {
   const info = txn.transaction_info;
   // T00xx event codes are PayPal-to-PayPal payments (including Friends &
   // Family and hosted button/card payments); everything else is fees,
   // refunds, bank transfers and so on.
-  if (!info.transaction_event_code?.startsWith("T00")) return false;
-  if (info.transaction_status !== "S") return false;
-  if (info.transaction_amount?.currency_code !== currency) return false;
-  if (Number(info.transaction_amount.value) !== fee) return false;
-  return !NOT_MEMBERSHIP_PATTERN.test(paymentText(txn));
+  if (!info.transaction_event_code?.startsWith("T00")) {
+    return "not a payment received";
+  }
+  if (info.transaction_status !== "S") return "not completed";
+  if (info.transaction_amount?.currency_code !== currency) {
+    return `not in ${currency}`;
+  }
+  if (Number(info.transaction_amount.value) !== fee) {
+    return "not the membership fee";
+  }
+  if (NOT_MEMBERSHIP_PATTERN.test(paymentText(txn))) {
+    return "note mentions the swap meet";
+  }
+  return undefined;
+}
+
+/**
+ * Describe a transaction for the run log. The repo (and so the GitHub
+ * Actions log) is public, so this never includes names or emails.
+ * @param {PayPalTransaction} txn - PayPal transaction.
+ * @return {string} Transaction ID, date, type, status and amount.
+ */
+function describeForLog(txn: PayPalTransaction): string {
+  const info = txn.transaction_info;
+  return `${info.transaction_id} (${info.transaction_initiation_date}, ` +
+    `${info.transaction_event_code}, status ${info.transaction_status}, ` +
+    `${info.transaction_amount?.value} ` +
+    `${info.transaction_amount?.currency_code})`;
+}
+
+/**
+ * @param {string} text - Text that may contain email addresses.
+ * @return {string} The text with email addresses hidden, for the public log.
+ */
+function redactEmails(text: string): string {
+  return text.replace(EMAIL_PATTERN, "<email>");
 }
 
 /**
@@ -258,6 +291,7 @@ export async function syncPayPalMemberships(
   const result: PayPalSyncResult = {
     applied: 0,
     alreadyApplied: 0,
+    previouslyProcessed: 0,
     manualReview: 0,
     ignored: 0,
     committeeNotified: false,
@@ -265,9 +299,12 @@ export async function syncPayPalMemberships(
 
   const payments = transactions
     .filter((txn) => {
-      const keep = isMembershipPayment(txn, fee, currency);
-      if (!keep) result.ignored++;
-      return keep;
+      const ignoreReason = notMembershipPaymentReason(txn, fee, currency);
+      if (ignoreReason) {
+        result.ignored++;
+        console.log(`  - ${describeForLog(txn)}: ignored, ${ignoreReason}.`);
+      }
+      return !ignoreReason;
     })
     .sort((a, b) =>
       (a.transaction_info.transaction_initiation_date ?? "")
@@ -307,6 +344,11 @@ export async function syncPayPalMemberships(
 
     // Applied (or found already applied) on an earlier run — nothing to do.
     if (previousStatus === "applied" || previousStatus === "already_applied") {
+      result.previouslyProcessed++;
+      console.log(
+        `  · ${describeForLog(txn)}: handled on an earlier run ` +
+        `(${previousStatus}).`,
+      );
       continue;
     }
 
@@ -351,7 +393,8 @@ export async function syncPayPalMemberships(
         }, {merge: true});
         result.alreadyApplied++;
         console.log(
-          `  = ${txnId}: ${user.data.email} already paid on ${paidDate}.`,
+          `  = ${describeForLog(txn)}: user ${user.id} already marked ` +
+          `paid on ${paidDate}.`,
         );
         continue;
       } else if (
@@ -371,7 +414,10 @@ export async function syncPayPalMemberships(
 
     if (reason || !user) {
       result.manualReview++;
-      console.log(`  ? ${txnId}: needs manual check — ${reason}`);
+      console.log(
+        `  ? ${describeForLog(txn)}: needs manual check — ` +
+        redactEmails(reason ?? ""),
+      );
       await ledgerRef.set({
         ...payment,
         status: "manual_review",
@@ -438,8 +484,8 @@ export async function syncPayPalMemberships(
     });
     result.applied++;
     console.log(
-      `  ✓ ${txnId}: ${wasMember ? "renewed" : "activated"} ` +
-      `${user.data.email} until ${newExpiry} (matched by ${stage}).`,
+      `  ✓ ${describeForLog(txn)}: ${wasMember ? "renewed" : "activated"} ` +
+      `user ${user.id} until ${newExpiry} (matched by ${stage}).`,
     );
   }
 
@@ -461,7 +507,8 @@ export async function syncPayPalMemberships(
 
   console.log(
     `\nDone. ${result.applied} applied, ${result.alreadyApplied} already ` +
-    `applied, ${result.manualReview} need a manual check.`,
+    `applied, ${result.manualReview} need a manual check, ` +
+    `${result.previouslyProcessed} handled on an earlier run.`,
   );
   return result;
 }

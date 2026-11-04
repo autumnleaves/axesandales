@@ -2,10 +2,10 @@ name: PayPal Membership Sync
 
 on:
   schedule:
-    # Run daily at 9pm UTC (7am/8am AEST/AEDT next day), before the
-    # membership expiry reminders so freshly renewed members aren't
-    # reminded.
-    - cron: '0 21 * * *'
+    # Every 6 hours. GitHub often starts scheduled runs hours late and
+    # PayPal's search data lags by up to 3 hours, so this keeps payments
+    # within the "up to 24 hours" the membership page promises.
+    - cron: '0 */6 * * *'
   workflow_dispatch: # Allow manual trigger for testing
 
 env:
